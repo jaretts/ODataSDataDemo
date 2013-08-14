@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sage.SDataHandler</RootNamespace>
+    <AssemblyName>Sage.SDataHandler</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\..\..\..\Apps\workspaces\webapi-sdata\codeplex-aspwebstack\aspnetwebstack\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetOpenAuth">
+      <HintPath>..\Lib\ThirdParty\DotNetOpenAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\Lib\ThirdParty\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json.Net35">
+      <HintPath>..\Lib\ThirdParty\Newtonsoft.Json.Net35.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel">
+      <HintPath>..\packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.9\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Obsidian.Client.Support">
+      <HintPath>..\..\..\..\..\sageid_sdk\Samples\DOTNET\Libs\Obsidian.Client.Support.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Authorisation">
+      <HintPath>..\..\..\..\..\sageid_sdk\Samples\DOTNET\Libs\Sage.Authorisation.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Authorisation.Client">
+      <HintPath>..\..\..\..\..\sageid_sdk\Samples\DOTNET\Libs\Sage.Authorisation.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Authorisation.Server">
+      <HintPath>..\..\..\..\..\sageid_sdk\Samples\DOTNET\Libs\Sage.Authorisation.Server.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.20505.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.4.0.20505.0\lib\net40\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.20505.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="Thinktecture.IdentityModel">
+      <HintPath>..\packages\Thinktecture.IdentityModel.2.1.5\lib\net40\Thinktecture.IdentityModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SDataModelEntity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SDataCollectionMetadata.cs" />
+    <Compile Include="SDataHandler.cs" />
+    <Compile Include="SDataRoutesUtil.cs" />
+    <Compile Include="SDataUriKeys.cs" />
+    <Compile Include="SDataUriUtil.cs" />
+    <Compile Include="SingleResourceMetadata.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Lib\ThirdParty\DotNetOpenAuth.LICENSE" />
+    <None Include="Lib\ThirdParty\log4net.LICENSE" />
+    <None Include="Lib\ThirdParty\Newtonsof.Json.LICENSE" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Lib\Google.Apis.Authentication.OAuth2.dll" />
+    <Content Include="Lib\Google.Apis.Authentication.OAuth2.pdb" />
+    <Content Include="Lib\Google.Apis.Authentication.OAuth2.xml" />
+    <Content Include="Lib\Google.Apis.dll" />
+    <Content Include="Lib\Google.Apis.pdb" />
+    <Content Include="Lib\Google.Apis.Silverlight.dll" />
+    <Content Include="Lib\Google.Apis.Silverlight.pdb" />
+    <Content Include="Lib\Google.Apis.Tools.CodeGen.dll" />
+    <Content Include="Lib\Google.Apis.Tools.CodeGen.pdb" />
+    <Content Include="Lib\Google.Apis.Tools.CodeGen.xml" />
+    <Content Include="Lib\Google.Apis.xml" />
+    <Content Include="Lib\ServiceGenerator.exe" />
+    <Content Include="Lib\ServiceGenerator.pdb" />
+    <Content Include="Lib\ServiceGenerator.xml" />
+    <Content Include="Lib\ThirdParty\DotNetOpenAuth.dll" />
+    <Content Include="Lib\ThirdParty\log4net.dll" />
+    <Content Include="Lib\ThirdParty\Newtonsoft.Json.Net35.dll" />
+    <Content Include="Lib\ThirdParty\Newtonsoft.Json.Net35.xml" />
+    <Content Include="Lib\ThirdParty\Newtonsoft.Json.Silverlight.dll" />
+    <Content Include="Lib\ThirdParty\nunit.framework.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
