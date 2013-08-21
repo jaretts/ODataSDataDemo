@@ -14,24 +14,6 @@ namespace Sage.SDataHandler
 {
     public class SDataHandler : DelegatingHandler //AuthenticationHandler
     {
-        /*
-        public SDataHandler() : base( CreateConfiguration() ) {}
-
-        public static AuthenticationConfiguration CreateConfiguration()
-        {
-            var config = new AuthenticationConfiguration
-            {
-                DefaultAuthenticationScheme = "Basic",
-            };
-
-            #region Basic Authentication
-            config.AddBasicAuthentication((userName, password) => userName == password);
-            #endregion
-
-            return config;
-        }
-        */
-
 
         public SDataHandler(HttpConfiguration httpConfiguration)
         {
@@ -42,7 +24,7 @@ namespace Sage.SDataHandler
         {
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(
+        protected async override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
 
@@ -56,62 +38,29 @@ namespace Sage.SDataHandler
 
             request.RequestUri = newUri;
 
-            /* if (HttpContext.Current.Request["code"] != null)
-                _authenticator.LoadAccessToken();*/
+            var response = await base.SendAsync(request, cancellationToken);
 
-            return base.SendAsync(request, cancellationToken).ContinueWith(
-                (task) =>
+            if (ResponseIsValid(response))
+            {
+                object responseObject;
+                response.TryGetContentValue(out responseObject);
+
+                if (responseObject is IQueryable)
                 {
-                    HttpResponseMessage response = task.Result;
+                    var old = await response.Content.ReadAsStringAsync();
 
-                    if (false && ResponseIsValid(response))
-                    {
-                        object responseObject;
-                        if (!String.Equals(originalUri.Query, newUri.Query))
-                        {
-                            response.RequestMessage.RequestUri = originalUri;
-                        }
+                    string nwContent = old.Replace("\"value\":[", "\"$resources\":[");
+                    nwContent = nwContent.Replace("odata.count", "$totalResults");
+                    nwContent = nwContent.Replace("odata.metadata", "$Url");
+                    nwContent = nwContent.Replace("$metadata#", "");
 
-                        response.TryGetContentValue(out responseObject);
-
-                        if (responseObject is IQueryable)
-                        {
-                            ProcessObject<object>(responseObject as IQueryable<object>, response, true);
-                        }
-                        else
-                        {
-                            /* Disable this logic for now; only metadata returned will be in model
-                            var list = new List<object>();
-                            list.Add(responseObject);
-                            ProcessObject<object>(responseObject as IEnumerable<object>, response, false);
-                             */
-                            response.Content = new ObjectContent<object>( responseObject, System.Web.Http.GlobalConfiguration.Configuration.Formatters[0]);
-
-                        }
-                    }
-
-                    return response;
+                    response.Content = new StringContent(nwContent);
                 }
-            );
-        }
+            }
 
-        private void ProcessObject<T>(IEnumerable<T> responseObject, HttpResponseMessage response, bool isIQueryable) where T : class
-        {
-            if (isIQueryable)
-            {
-                var metadata = new SDataCollectionMetadata<T>(response, isIQueryable);
-                response.Content = new ObjectContent<SDataCollectionMetadata<T>>(metadata, System.Web.Http.GlobalConfiguration.Configuration.Formatters[0]);
-            }
-            else
-            {
-                var metadata = new SDataResourceMetadata<T>(response, isIQueryable);
-                response.Content = new ObjectContent<SDataResourceMetadata<T>>(metadata, System.Web.Http.GlobalConfiguration.Configuration.Formatters[0]);
-            }
-             
-            //uncomment this to preserve content negotation, but remember about typecasting for DataContractSerliaizer
-            //var formatter = GlobalConfiguration.Configuration.Formatters.First(t => t.SupportedMediaTypes.Contains(new MediaTypeHeaderValue(response.Content.Headers.ContentType.MediaType)));
-            //response.Content = new ObjectContent<Metadata<T>>(metadata, formatter);
+            return response;
         }
+        
 
         private bool ResponseIsValid(HttpResponseMessage response)
         {

@@ -52,6 +52,21 @@ namespace Sage.SDataHandler
                 translatedUriQuery += ReplaceParamName(translatedKey, query[key]);
             }
 
+            if (convertDirection == SDataUriKeys.CONVERT_TO_ODATA && !translatedUriQuery.Contains("$inlinecount"))
+            {
+                // add "$inlinecount=allpages" so total count will appear in results
+                if (translatedUriQuery.Length > 0)
+                {
+                    // need to append sep
+                    translatedUriQuery += "&";
+                }
+                else
+                {
+                    translatedUriQuery += "?";
+                }
+                translatedUriQuery += "$inlinecount=allpages";
+            }
+
             Uri retValue;
             if (string.IsNullOrEmpty(translatedUriQuery))
             {
@@ -179,7 +194,10 @@ namespace Sage.SDataHandler
             Uri retValue;
             // there were params to map from sdata to odata
             string originalUri = requestUri.AbsoluteUri;
-            originalUri = originalUri.Substring(0, originalUri.IndexOf('?') + 1);
+            if (originalUri.IndexOf('?') > 0)
+            {
+                originalUri = originalUri.Substring(0, originalUri.IndexOf('?') + 1);
+            }
 
             retValue = new Uri(originalUri + translatedQuery);
             return retValue;
