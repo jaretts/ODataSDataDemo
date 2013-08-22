@@ -9,7 +9,7 @@ namespace DemoModel.Model
     [DataContract]
     public class NephosEntity
     {
-        [DataMember(Name = "$key")]
+        //[DataMember(Name = "$key")]
         public virtual Guid Id { get { return Guid.Empty; } }
     }
 }

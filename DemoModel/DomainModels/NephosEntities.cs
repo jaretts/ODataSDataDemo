@@ -13,4 +13,8 @@ namespace DemoModel.Model
     {
     }
 
+    public partial class Order : NephosEntity
+    {
+    }
+
 }
