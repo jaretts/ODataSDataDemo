@@ -10,6 +10,7 @@ using Thinktecture.IdentityModel.Tokens.Http;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Text;
+using Sage.SDataHandler.JsonHelpers;
 
 namespace Sage.SDataHandler
 {
@@ -72,7 +73,9 @@ namespace Sage.SDataHandler
                 if (nwContent.Length > 0)
                 {
                     //System.Json
-                    response.Content = new StringContent(nwContent.ToString());
+                    //string fmtJson = JsonHelper.FormatJson(nwContent.ToString());
+                    string fmtJson = new JsonFormatter(nwContent.ToString()).Format();
+                    response.Content = new StringContent(fmtJson);
                 }
             }
 

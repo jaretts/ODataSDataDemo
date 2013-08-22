@@ -18,7 +18,7 @@ namespace ODataSDataWebApiDemo3.Controllers
             return new NephosEntities();
         }
 
-        [Queryable(PageSize = 3)]
+        [Queryable(PageSize = 20)]
         public override IQueryable<TEntity> Get()
         {
             return GetDatabaseContext().Set<TEntity>();
