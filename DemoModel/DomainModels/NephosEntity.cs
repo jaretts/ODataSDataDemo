@@ -6,6 +6,7 @@ using System.Web;
 
 namespace DemoModel.Model
 {
+    [DataContract]
     public class NephosEntity
     {
         [DataMember(Name = "$key")]
