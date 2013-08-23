@@ -17,6 +17,9 @@ namespace Sage.SDataHandler
     public class SDataHandler : DelegatingHandler //AuthenticationHandler
     {
         private const string ODATA_ELEMENT_KEY = "@Element\",";
+        private const string JSON_MEDIA_TYPE = "application/json";
+        private const string SDATA_MEDIA_TYPE_PARAM_VND = "vnd.sage";
+        private const string SDATA_MEDIA_TYPE_VALUE_VND = "sdata";
 
         public SDataHandler(HttpConfiguration httpConfiguration)
         {
@@ -44,31 +47,12 @@ namespace Sage.SDataHandler
 
             var acceptHeader = request.Headers.Accept;
 
-            if (ResponseIsValid(response) && acceptHeader.Any(x => x.MediaType == "application/json"))
+            if (ResponseIsValid(response) &&
+                acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
+                                    x.Parameters.Any(p => p.Value == SDATA_MEDIA_TYPE_VALUE_VND)
+                ) )
             {
-                object responseObject;
-                response.TryGetContentValue(out responseObject);
-
-                var origContent = await response.Content.ReadAsStringAsync();
-
-                StringBuilder nwContent = new StringBuilder(origContent);
-
-                if (responseObject is IQueryable)
-                {
-                    nwContent = nwContent.Replace("\"value\":[", "\"$resources\":[");
-                    nwContent = nwContent.Replace("odata.count", "$totalResults");
-                    nwContent = nwContent.Replace("odata.metadata", "$url");
-                    nwContent = nwContent.Replace("$metadata#", "");
-                    nwContent = nwContent.Replace("$skip", "startindex");
-                    nwContent = nwContent.Replace("odata.nextLink", "next");
-                    nwContent = nwContent.Replace("$orderby", "orderby");
-                }
-                else if (origContent.Contains(ODATA_ELEMENT_KEY))
-                {
-                    int posmetaend = origContent.IndexOf(ODATA_ELEMENT_KEY);
-                    nwContent = nwContent.Remove(0, posmetaend + ODATA_ELEMENT_KEY.Length);
-                    nwContent = nwContent.Insert(0, "{\n");
-                }
+                StringBuilder nwContent = await TransformToSData(response);
 
                 if (nwContent.Length > 0)
                 {
@@ -80,6 +64,34 @@ namespace Sage.SDataHandler
             }
 
             return response;
+        }
+
+        private static async Task<StringBuilder> TransformToSData(HttpResponseMessage response)
+        {
+            object responseObject;
+            response.TryGetContentValue(out responseObject);
+
+            var origContent = await response.Content.ReadAsStringAsync();
+
+            StringBuilder nwContent = new StringBuilder(origContent);
+
+            if (responseObject is IQueryable)
+            {
+                nwContent = nwContent.Replace("\"value\":[", "\"$resources\":[");
+                nwContent = nwContent.Replace("odata.count", "$totalResults");
+                nwContent = nwContent.Replace("odata.metadata", "$url");
+                nwContent = nwContent.Replace("$metadata#", "");
+                nwContent = nwContent.Replace("$skip", "startindex");
+                nwContent = nwContent.Replace("odata.nextLink", "next");
+                nwContent = nwContent.Replace("$orderby", "orderby");
+            }
+            else if (origContent.Contains(ODATA_ELEMENT_KEY))
+            {
+                int posmetaend = origContent.IndexOf(ODATA_ELEMENT_KEY);
+                nwContent = nwContent.Remove(0, posmetaend + ODATA_ELEMENT_KEY.Length);
+                nwContent = nwContent.Insert(0, "{\n");
+            }
+            return nwContent;
         }
         
 

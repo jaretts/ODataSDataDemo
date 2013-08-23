@@ -6,10 +6,9 @@ using System.Web;
 
 namespace DemoModel.Model
 {
-    [DataContract]
-    public class NephosEntity
+    abstract public class NephosEntity
     {
-        //[DataMember(Name = "$key")]
-        public virtual Guid Id { get { return Guid.Empty; } }
+        abstract public void SetNephosKey(System.Guid idValue);
+        public System.Guid Id { get; set; }
     }
 }
