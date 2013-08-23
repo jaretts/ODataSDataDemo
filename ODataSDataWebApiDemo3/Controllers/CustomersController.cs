@@ -13,7 +13,7 @@ namespace ODataSDataWebApiDemo3.Controllers
 {
     public class CustomersController : DynamicController<Customer, string>
     {
-        public IQueryable<Tenant> GetTenantsFromCustomer([FromODataUri] string key)
+        public IQueryable<Tenant> GetTenantFromCustomer([FromODataUri] string key)
         {
             Guid custKey = Guid.Parse(key);
 
@@ -21,5 +21,15 @@ namespace ODataSDataWebApiDemo3.Controllers
 
             return tens;
         }
+
+        public IQueryable<Quote> GetQuoteFromCustomer([FromODataUri] string key)
+        {
+            Guid custKey = Guid.Parse(key);
+
+            IQueryable<Quote> tens = GetDatabaseContext().Set<Quote>().Where(t => t.Customer_Id == custKey);
+
+            return tens;
+        }
+
     }
 }
