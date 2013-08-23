@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="JsonHelpers\JsonHelper.cs" />
     <Compile Include="JsonHelpers\JsonFormatter.cs" />
+    <Compile Include="SDataEntity.cs" />
     <Compile Include="SDataModelEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDataCollectionMetadata.cs" />

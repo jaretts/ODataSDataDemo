@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Sage.SData.Entity;
 
 namespace DemoModel.Model
 {
-    public partial class Customer : NephosEntity
+    public partial class Customer : SDataEntity
     {
         public override void SetNephosKey(System.Guid idValue)
         {
@@ -13,7 +14,7 @@ namespace DemoModel.Model
         }
     }
 
-    public partial class Tenant : NephosEntity
+    public partial class Tenant : SDataEntity
     {
         public override void SetNephosKey(System.Guid idValue)
         {
@@ -21,7 +22,7 @@ namespace DemoModel.Model
         }
     }
 
-    public partial class Order : NephosEntity
+    public partial class Order : SDataEntity
     {
         public override void SetNephosKey(System.Guid idValue)
         {

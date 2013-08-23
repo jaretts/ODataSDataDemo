@@ -8,11 +8,12 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Query;
+using Sage.SData.Entity;
 
 namespace ODataSDataWebApiDemo3.Controllers
 {
     abstract public class DynamicController<TEntity,TKey> : System.Web.Http.OData.EntitySetController<TEntity, string>
-        where TEntity : DemoModel.Model.NephosEntity
+        where TEntity : SDataEntity
     {
 
         NephosEntities dbContext;
