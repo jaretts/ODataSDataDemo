@@ -46,5 +46,7 @@ namespace DemoModel.Model
         public int SyncEndpointTick { get; set; }
         public short EntityStatus { get; set; }
         public string TaxTransactionId { get; set; }
+    
+        public virtual Customer Customer { get; set; }
     }
 }

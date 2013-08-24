@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Thinktecture.IdentityModel.Tokens.Http;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Text;

@@ -1164,6 +1164,10 @@
             <End Role="InventoryItems" EntitySet="InventoryItems" />
             <End Role="InventoryItems1" EntitySet="InventoryItems" />
           </AssociationSet>
+          <AssociationSet Name="CustomerOrder" Association="NephosModel.CustomerOrder">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Address">
           <Key>
@@ -1315,6 +1319,7 @@
           <Property Name="SyncEndpointTick" Type="Int32" Nullable="false" />
           <Property Name="EntityStatus" Type="Int16" Nullable="false" />
           <NavigationProperty Name="Tenant" Relationship="NephosModel.FK_Customers_Tenants" FromRole="Customers" ToRole="Tenants" />
+          <NavigationProperty Name="Orders" Relationship="NephosModel.CustomerOrder" FromRole="Customer" ToRole="Order" />
         </EntityType>
         <EntityType Name="DocumentTemplate">
           <Key>
@@ -1609,6 +1614,7 @@
           <Property Name="SyncEndpointTick" Type="Int32" Nullable="false" />
           <Property Name="EntityStatus" Type="Int16" Nullable="false" />
           <Property Name="TaxTransactionId" Type="String" MaxLength="64" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Customer" Relationship="NephosModel.CustomerOrder" FromRole="Order" ToRole="Customer" />
         </EntityType>
         <EntityType Name="Payment">
           <Key>
@@ -2089,6 +2095,18 @@
         <Association Name="RelatedInventoryItems">
           <End Role="InventoryItems" Type="NephosModel.InventoryItem" Multiplicity="*" />
           <End Role="InventoryItems1" Type="NephosModel.InventoryItem" Multiplicity="*" />
+        </Association>
+        <Association Name="CustomerOrder">
+          <End Type="NephosModel.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="NephosModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="Customer_Id" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
       </Schema>
     </edmx:ConceptualModels>

@@ -4,14 +4,14 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="154e6a8b88c646d890ae7e6d7eb8440e" Name="Diagram1" ZoomLevel="98">
+      <Diagram DiagramId="154e6a8b88c646d890ae7e6d7eb8440e" Name="Diagram1" ZoomLevel="94">
         <EntityTypeShape EntityType="NephosModel.Address" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="NephosModel.Blob" Width="1.5" PointX="3" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="NephosModel.Blob" Width="1.5" PointX="2.625" PointY="4.125" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.ClickToPayPayment" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.Contact" Width="1.5" PointX="5.75" PointY="7.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.CustomerPortalSetting" Width="1.5" PointX="3" PointY="8.375" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.CustomerPrimary" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="NephosModel.Customer" Width="1.5" PointX="3" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="NephosModel.Customer" Width="1.5" PointX="2.875" PointY="12.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.DocumentTemplate" Width="1.5" PointX="3" PointY="16.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.EmailHistory" Width="1.5" PointX="7.75" PointY="7.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.EmailTemplate" Width="1.5" PointX="3" PointY="20.25" IsExpanded="true" />
@@ -23,7 +23,7 @@
         <EntityTypeShape EntityType="NephosModel.InvoicePayment" Width="1.5" PointX="11.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.Invoice" Width="1.5" PointX="11.75" PointY="5.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.OrderDetail" Width="1.5" PointX="7.75" PointY="12.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="NephosModel.Order" Width="1.5" PointX="13.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="NephosModel.Order" Width="1.5" PointX="5.5" PointY="13" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.Payment" Width="1.5" PointX="13.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.QuoteDetail" Width="1.5" PointX="13.75" PointY="14.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.Quote" Width="1.5" PointX="15.75" PointY="0.75" IsExpanded="true" />
@@ -37,7 +37,7 @@
         <EntityTypeShape EntityType="NephosModel.User" Width="1.5" PointX="3" PointY="40.25" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.VersionInfo" Width="1.5" PointX="17.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.WorkOrderAttachment" Width="1.5" PointX="17.75" PointY="3.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="NephosModel.WorkOrderDetail" Width="1.5" PointX="5.75" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="NephosModel.WorkOrderDetail" Width="1.5" PointX="9.625" PointY="17.625" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.WorkOrder" Width="1.5" PointX="7.75" PointY="17.75" IsExpanded="true" />
         <AssociationConnector Association="NephosModel.FK_Blobs_Tenants" ManuallyRouted="false" />
         <AssociationConnector Association="NephosModel.FK_CustomerPortalSettings_Tenants" ManuallyRouted="false" />
@@ -53,6 +53,7 @@
         <AssociationConnector Association="NephosModel.FK_Users_Tenants" ManuallyRouted="false" />
         <AssociationConnector Association="NephosModel.InventoryItemCategories" ManuallyRouted="false" />
         <AssociationConnector Association="NephosModel.RelatedInventoryItems" ManuallyRouted="false" />
+        <AssociationConnector Association="NephosModel.CustomerOrder" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

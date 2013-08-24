@@ -14,6 +14,11 @@ namespace DemoModel.Model
     
     public partial class Customer
     {
+        public Customer()
+        {
+            this.Orders = new HashSet<Order>();
+        }
+    
         public System.Guid Id { get; set; }
         public System.Guid Tenant_Id { get; set; }
         public string Name { get; set; }
@@ -28,5 +33,6 @@ namespace DemoModel.Model
         public short EntityStatus { get; set; }
     
         public virtual Tenant Tenant { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }
