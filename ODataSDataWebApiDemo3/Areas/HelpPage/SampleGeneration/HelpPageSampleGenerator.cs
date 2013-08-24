@@ -213,7 +213,7 @@ namespace ODataSDataWebApiDemo3.Areas.HelpPage
                         break;
                     case SampleDirection.Response:
                     default:
-                        type = api.ActionDescriptor.ReturnType;
+                        type = api.ResponseDescription.ResponseType ?? api.ResponseDescription.DeclaredType;
                         formatters = api.SupportedResponseFormatters;
                         break;
                 }
