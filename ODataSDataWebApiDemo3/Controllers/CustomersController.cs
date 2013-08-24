@@ -22,11 +22,11 @@ namespace ODataSDataWebApiDemo3.Controllers
             return tens;
         }
 
-        public IQueryable<Quote> GetQuoteFromCustomer([FromODataUri] string key)
+        public IQueryable<Order> GetOrdersFromCustomer([FromODataUri] string key)
         {
             Guid custKey = Guid.Parse(key);
 
-            IQueryable<Quote> tens = GetDatabaseContext().Set<Quote>().Where(t => t.Customer_Id == custKey);
+            IQueryable<Order> tens = GetDatabaseContext().Set<Order>().Where(t => t.Customer_Id == custKey);
 
             return tens;
         }
