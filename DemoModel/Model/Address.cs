@@ -39,5 +39,7 @@ namespace DemoModel.Model
         public short SyncEndpoint_Id { get; set; }
         public int SyncEndpointTick { get; set; }
         public short EntityStatus { get; set; }
+    
+        public virtual Customer Customer { get; set; }
     }
 }

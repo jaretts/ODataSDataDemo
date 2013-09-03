@@ -17,6 +17,10 @@ namespace DemoModel.Model
         public Customer()
         {
             this.Orders = new HashSet<Order>();
+            this.Contacts = new HashSet<Contact>();
+            this.Addresses = new HashSet<Address>();
+            this.Quotes = new HashSet<Quote>();
+            this.CustomerPrimaries = new HashSet<CustomerPrimary>();
         }
     
         public System.Guid Id { get; set; }
@@ -34,5 +38,9 @@ namespace DemoModel.Model
     
         public virtual Tenant Tenant { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Contact> Contacts { get; set; }
+        public virtual ICollection<Address> Addresses { get; set; }
+        public virtual ICollection<Quote> Quotes { get; set; }
+        public virtual ICollection<CustomerPrimary> CustomerPrimaries { get; set; }
     }
 }

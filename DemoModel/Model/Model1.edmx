@@ -1168,6 +1168,22 @@
             <End Role="Customer" EntitySet="Customers" />
             <End Role="Order" EntitySet="Orders" />
           </AssociationSet>
+          <AssociationSet Name="Contacts1" Association="NephosModel.Contacts">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Contact" EntitySet="Contacts" />
+          </AssociationSet>
+          <AssociationSet Name="CustomerAddress" Association="NephosModel.CustomerAddress">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Address" EntitySet="Addresses" />
+          </AssociationSet>
+          <AssociationSet Name="CustomerQuote" Association="NephosModel.CustomerQuote">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="Quote" EntitySet="Quotes" />
+          </AssociationSet>
+          <AssociationSet Name="CustomerCustomerPrimary" Association="NephosModel.CustomerCustomerPrimary">
+            <End Role="Customer" EntitySet="Customers" />
+            <End Role="CustomerPrimary" EntitySet="CustomerPrimaries" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Address">
           <Key>
@@ -1198,6 +1214,7 @@
           <Property Name="SyncEndpoint_Id" Type="Int16" Nullable="false" />
           <Property Name="SyncEndpointTick" Type="Int32" Nullable="false" />
           <Property Name="EntityStatus" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="Customer" Relationship="NephosModel.CustomerAddress" FromRole="Address" ToRole="Customer" />
         </EntityType>
         <EntityType Name="Blob">
           <Key>
@@ -1271,6 +1288,7 @@
           <Property Name="SyncEndpoint_Id" Type="Int16" Nullable="false" />
           <Property Name="SyncEndpointTick" Type="Int32" Nullable="false" />
           <Property Name="EntityStatus" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="Customer" Relationship="NephosModel.Contacts" FromRole="Contact" ToRole="Customer" />
         </EntityType>
         <EntityType Name="CustomerPortalSetting">
           <Key>
@@ -1301,6 +1319,7 @@
           <Property Name="Address_Id" Type="Guid" />
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="UpdatedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Customer" Relationship="NephosModel.CustomerCustomerPrimary" FromRole="CustomerPrimary" ToRole="Customer" />
         </EntityType>
         <EntityType Name="Customer">
           <Key>
@@ -1320,6 +1339,10 @@
           <Property Name="EntityStatus" Type="Int16" Nullable="false" />
           <NavigationProperty Name="Tenant" Relationship="NephosModel.FK_Customers_Tenants" FromRole="Customers" ToRole="Tenants" />
           <NavigationProperty Name="Orders" Relationship="NephosModel.CustomerOrder" FromRole="Customer" ToRole="Order" />
+          <NavigationProperty Name="Contacts" Relationship="NephosModel.Contacts" FromRole="Customer" ToRole="Contact" />
+          <NavigationProperty Name="Addresses" Relationship="NephosModel.CustomerAddress" FromRole="Customer" ToRole="Address" />
+          <NavigationProperty Name="Quotes" Relationship="NephosModel.CustomerQuote" FromRole="Customer" ToRole="Quote" />
+          <NavigationProperty Name="CustomerPrimaries" Relationship="NephosModel.CustomerCustomerPrimary" FromRole="Customer" ToRole="CustomerPrimary" />
         </EntityType>
         <EntityType Name="DocumentTemplate">
           <Key>
@@ -1688,6 +1711,7 @@
           <Property Name="SyncEndpointTick" Type="Int32" Nullable="false" />
           <Property Name="EntityStatus" Type="Int16" Nullable="false" />
           <Property Name="TaxTransactionId" Type="String" MaxLength="64" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Customer" Relationship="NephosModel.CustomerQuote" FromRole="Quote" ToRole="Customer" />
         </EntityType>
         <EntityType Name="SalesTeamMemberGoalPeriod">
           <Key>
@@ -2104,6 +2128,54 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Order">
+              <PropertyRef Name="Customer_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Contacts">
+          <End Type="NephosModel.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="NephosModel.Contact" Role="Contact" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Contact">
+              <PropertyRef Name="Customer_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="CustomerAddress">
+          <End Type="NephosModel.Customer" Role="Customer" Multiplicity="0..1" />
+          <End Type="NephosModel.Address" Role="Address" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Address">
+              <PropertyRef Name="Customer_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="CustomerQuote">
+          <End Type="NephosModel.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="NephosModel.Quote" Role="Quote" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Quote">
+              <PropertyRef Name="Customer_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="CustomerCustomerPrimary">
+          <End Type="NephosModel.Customer" Role="Customer" Multiplicity="1" />
+          <End Type="NephosModel.CustomerPrimary" Role="CustomerPrimary" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CustomerPrimary">
               <PropertyRef Name="Customer_Id" />
             </Dependent>
           </ReferentialConstraint>

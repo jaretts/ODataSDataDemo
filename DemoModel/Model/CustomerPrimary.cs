@@ -22,5 +22,7 @@ namespace DemoModel.Model
         public Nullable<System.Guid> Address_Id { get; set; }
         public System.DateTime CreatedOn { get; set; }
         public System.DateTime UpdatedOn { get; set; }
+    
+        public virtual Customer Customer { get; set; }
     }
 }
