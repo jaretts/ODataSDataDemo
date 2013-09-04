@@ -130,6 +130,9 @@
     <Compile Include="Model\QuoteDetail.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\QuoteSyncDetail.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\SalesTeamMember.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

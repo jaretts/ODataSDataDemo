@@ -12,18 +12,15 @@ namespace DemoModel.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class QuoteDetail
+    public partial class QuoteSyncDetail
     {
         public System.Guid Id { get; set; }
-        public System.Guid Tenant_Id { get; set; }
-        public decimal Quantity { get; set; }
-        public decimal Price { get; set; }
-        public System.DateTime CreatedOn { get; set; }
-        public System.DateTime UpdatedOn { get; set; }
-        public System.Guid Quote_Id { get; set; }
-        public Nullable<System.Guid> InventoryItem_Id { get; set; }
-        public short EntityStatus { get; set; }
+        public string SyncHashKey { get; set; }
+        public short SyncEndpoint_Id { get; set; }
+        public int SyncEndpointTick { get; set; }
+        public string ExternalReference { get; set; }
+        public string External_Id { get; set; }
     
-        public virtual QuoteSyncDetail QuoteSyncDetail { get; set; }
+        public virtual QuoteDetail QuoteDetail { get; set; }
     }
 }

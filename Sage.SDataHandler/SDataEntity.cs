@@ -10,5 +10,6 @@ namespace Sage.SData.Entity
     {
         abstract public void SetNephosKey(System.Guid idValue);
         public System.Guid Id { get; set; }
+        public System.Guid Tenant_Id { get; set; }
     }
 }

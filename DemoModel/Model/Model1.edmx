@@ -1184,6 +1184,11 @@
             <End Role="Customer" EntitySet="Customers" />
             <End Role="CustomerPrimary" EntitySet="CustomerPrimaries" />
           </AssociationSet>
+          <EntitySet Name="QuoteSyncDetails" EntityType="NephosModel.QuoteSyncDetail" />
+          <AssociationSet Name="QuoteDetailQuoteSyncDetail" Association="NephosModel.QuoteDetailQuoteSyncDetail">
+            <End Role="QuoteDetail" EntitySet="QuoteDetails" />
+            <End Role="QuoteSyncDetail" EntitySet="QuoteSyncDetails" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Address">
           <Key>
@@ -1676,12 +1681,8 @@
           <Property Name="UpdatedOn" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Quote_Id" Type="Guid" Nullable="false" />
           <Property Name="InventoryItem_Id" Type="Guid" />
-          <Property Name="External_Id" Type="String" MaxLength="64" Unicode="true" FixedLength="false" />
-          <Property Name="ExternalReference" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
-          <Property Name="SyncHashKey" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
-          <Property Name="SyncEndpoint_Id" Type="Int16" Nullable="false" />
-          <Property Name="SyncEndpointTick" Type="Int32" Nullable="false" />
           <Property Name="EntityStatus" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="QuoteSyncDetail" Relationship="NephosModel.QuoteDetailQuoteSyncDetail" FromRole="QuoteDetail" ToRole="QuoteSyncDetail" />
         </EntityType>
         <EntityType Name="Quote">
           <Key>
@@ -2180,6 +2181,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="QuoteSyncDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="None" />
+          <Property Type="String" Name="SyncHashKey" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="Int16" Name="SyncEndpoint_Id" Nullable="false" />
+          <Property Type="Int32" Name="SyncEndpointTick" Nullable="false" />
+          <Property Type="String" Name="ExternalReference" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="External_Id" MaxLength="64" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="QuoteDetail" Relationship="NephosModel.QuoteDetailQuoteSyncDetail" FromRole="QuoteSyncDetail" ToRole="QuoteDetail" />
+        </EntityType>
+        <Association Name="QuoteDetailQuoteSyncDetail">
+          <End Type="NephosModel.QuoteDetail" Role="QuoteDetail" Multiplicity="1" />
+          <End Type="NephosModel.QuoteSyncDetail" Role="QuoteSyncDetail" Multiplicity="1" />
+          <ReferentialConstraint>
+            <Principal Role="QuoteDetail">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="QuoteSyncDetail">
+              <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2673,11 +2698,6 @@
                 <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
                 <ScalarProperty Name="Quote_Id" ColumnName="Quote_Id" />
                 <ScalarProperty Name="InventoryItem_Id" ColumnName="InventoryItem_Id" />
-                <ScalarProperty Name="External_Id" ColumnName="External_Id" />
-                <ScalarProperty Name="ExternalReference" ColumnName="ExternalReference" />
-                <ScalarProperty Name="SyncHashKey" ColumnName="SyncHashKey" />
-                <ScalarProperty Name="SyncEndpoint_Id" ColumnName="SyncEndpoint_Id" />
-                <ScalarProperty Name="SyncEndpointTick" ColumnName="SyncEndpointTick" />
                 <ScalarProperty Name="EntityStatus" ColumnName="EntityStatus" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -2981,6 +3001,18 @@
               <ScalarProperty Name="Id" ColumnName="Related_Inventory_Id" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="QuoteSyncDetails">
+            <EntityTypeMapping TypeName="IsTypeOf(NephosModel.QuoteSyncDetail)">
+              <MappingFragment StoreEntitySet="QuoteDetails">
+                <ScalarProperty Name="SyncEndpointTick" ColumnName="SyncEndpointTick" />
+                <ScalarProperty Name="SyncEndpoint_Id" ColumnName="SyncEndpoint_Id" />
+                <ScalarProperty Name="SyncHashKey" ColumnName="SyncHashKey" />
+                <ScalarProperty Name="ExternalReference" ColumnName="ExternalReference" />
+                <ScalarProperty Name="External_Id" ColumnName="External_Id" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

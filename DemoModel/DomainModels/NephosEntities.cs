@@ -30,4 +30,19 @@ namespace DemoModel.Model
         }
     }
 
+    public partial class QuoteDetail : SDataEntity
+    {
+        public override void SetNephosKey(System.Guid idValue)
+        {
+            Id = idValue;
+        }
+    }
+    public partial class InventoryItem : SDataEntity
+    {
+        public override void SetNephosKey(System.Guid idValue)
+        {
+            Id = idValue;
+        }
+    }
+
 }

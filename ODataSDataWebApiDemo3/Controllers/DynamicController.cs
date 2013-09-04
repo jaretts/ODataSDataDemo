@@ -17,6 +17,7 @@ namespace ODataSDataWebApiDemo3.Controllers
     {
 
         NephosEntities dbContext;
+        Guid VALID_TENANT_ID = Guid.Parse("7b6791d5-8658-44e5-86bc-8181735d0bf7");
 
         protected DbContext GetDatabaseContext()
         {
@@ -28,10 +29,10 @@ namespace ODataSDataWebApiDemo3.Controllers
             return dbContext;
         }
 
-        [Queryable(AllowedQueryOptions = AllowedQueryOptions.All)]
+        //[Queryable(AllowedQueryOptions = AllowedQueryOptions.All)]
         public override IQueryable<TEntity> Get()
         {
-            return GetDatabaseContext().Set<TEntity>();
+            return GetDatabaseContext().Set<TEntity>().Where( e => e.Tenant_Id == VALID_TENANT_ID);
         }
 
         protected override TEntity GetEntityByKey(string key)

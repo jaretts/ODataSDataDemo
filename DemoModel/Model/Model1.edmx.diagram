@@ -25,7 +25,7 @@
         <EntityTypeShape EntityType="NephosModel.OrderDetail" Width="1.5" PointX="7.75" PointY="12.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.Order" Width="1.5" PointX="5.5" PointY="13" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.Payment" Width="1.5" PointX="13.75" PointY="8.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="NephosModel.QuoteDetail" Width="1.5" PointX="13.75" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="NephosModel.QuoteDetail" Width="1.5" PointX="14" PointY="17.125" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.Quote" Width="1.5" PointX="15.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.SalesTeamMemberGoalPeriod" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.SalesTeamMember" Width="1.5" PointX="15.75" PointY="7.75" IsExpanded="true" />
@@ -33,7 +33,7 @@
         <EntityTypeShape EntityType="NephosModel.ServiceType" Width="1.5" PointX="3" PointY="31.875" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.SyncDigest" Width="1.5" PointX="3" PointY="36.875" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.Tenant" Width="1.5" PointX="0.75" PointY="19.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="NephosModel.UnprocessedInvoice" Width="1.5" PointX="15.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="NephosModel.UnprocessedInvoice" Width="1.5" PointX="17.75" PointY="14.125" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.User" Width="1.5" PointX="3" PointY="40.25" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.VersionInfo" Width="1.5" PointX="17.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="NephosModel.WorkOrderAttachment" Width="1.5" PointX="17.75" PointY="3.75" IsExpanded="true" />
@@ -58,6 +58,8 @@
         <AssociationConnector Association="NephosModel.CustomerAddress" />
         <AssociationConnector Association="NephosModel.CustomerQuote" />
         <AssociationConnector Association="NephosModel.CustomerCustomerPrimary" />
+        <EntityTypeShape EntityType="NephosModel.QuoteSyncDetail" Width="1.5" PointX="17.25" PointY="17.75" />
+        <AssociationConnector Association="NephosModel.QuoteDetailQuoteSyncDetail" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

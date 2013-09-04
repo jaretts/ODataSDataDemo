@@ -59,5 +59,6 @@ namespace DemoModel.Model
         public DbSet<WorkOrderAttachment> WorkOrderAttachments { get; set; }
         public DbSet<WorkOrderDetail> WorkOrderDetails { get; set; }
         public DbSet<WorkOrder> WorkOrders { get; set; }
+        public DbSet<QuoteSyncDetail> QuoteSyncDetails { get; set; }
     }
 }
