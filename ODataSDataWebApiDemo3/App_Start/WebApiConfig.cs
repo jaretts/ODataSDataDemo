@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.OData.Builder;
 using System.Web.Http.OData.Query;
+using System.Web.Http.OData.Routing;
 
 namespace ODataSDataWebApiDemo3
 {
@@ -43,6 +44,34 @@ namespace ODataSDataWebApiDemo3
         {
             ODataModelBuilder builder = new ODataConventionModelBuilder();
             builder.EntitySet<Customer>("Customers");
+
+            var selfAction = builder.Entity<Customer>().TransientAction("self");
+            selfAction.HasActionLink(ctx =>
+            {
+                // or simply: return ctx.Url.Request.RequestUri
+                var cust = ctx.EntityInstance as Customer;
+                if (cust.EntityStatus == cust.EntityStatus)
+                {
+                    return new Uri(ctx.Url.ODataLink(
+                        new EntitySetPathSegment(ctx.EntitySet),
+                        new KeyValuePathSegment(cust.Id.ToString()))); //,
+                        //new ActionPathSegment(checkoutAction.Name)));
+                }
+                else
+                {
+                    return null;
+                }
+            }, followsConventions: false);
+
+            var editAction = builder.Entity<Customer>().TransientAction("edit");
+            editAction.HasActionLink(ctx =>
+            {
+                var cust = ctx.EntityInstance as Customer;
+                return new Uri(ctx.Url.ODataLink(new EntitySetPathSegment(ctx.EntitySet),
+                    new KeyValuePathSegment(cust.Id.ToString())));
+            } , followsConventions: false);
+
+
             builder.EntitySet<Order>("Orders");
             builder.EntitySet<Address>("Addresses");
             builder.EntitySet<ClickToPayPayment>("ClickToPayPayments");
