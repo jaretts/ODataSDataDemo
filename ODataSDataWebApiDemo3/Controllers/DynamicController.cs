@@ -9,6 +9,7 @@ using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Query;
 using Sage.SData.Entity;
+using CodeFirstModel;
 
 namespace ODataSDataWebApiDemo3.Controllers
 {
@@ -16,14 +17,14 @@ namespace ODataSDataWebApiDemo3.Controllers
         where TEntity : SDataEntity
     {
 
-        NephosEntities dbContext;
+        SalesModelContext dbContext;
         Guid VALID_TENANT_ID = Guid.Parse("7b6791d5-8658-44e5-86bc-8181735d0bf7");
 
         protected DbContext GetDatabaseContext()
         {
             if (dbContext == null)
             {
-                dbContext = new NephosEntities();
+                dbContext = new SalesModelContext();
             }
 
             return dbContext;
@@ -32,7 +33,7 @@ namespace ODataSDataWebApiDemo3.Controllers
         //[Queryable(AllowedQueryOptions = AllowedQueryOptions.All)]
         public override IQueryable<TEntity> Get()
         {
-            return GetDatabaseContext().Set<TEntity>().Where( e => e.Tenant_Id == VALID_TENANT_ID);
+            return GetDatabaseContext().Set<TEntity>();//.Where( e => e.Tenant_Id == VALID_TENANT_ID);
         }
 
         protected override TEntity GetEntityByKey(string key)

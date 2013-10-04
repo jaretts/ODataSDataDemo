@@ -93,7 +93,7 @@ namespace ODataSDataWebApiDemo3
             builder.EntitySet<Payment>("Payments");
             builder.EntitySet<QuoteDetail>("QuoteDetails");
 
-            builder.EntitySet<QuoteSyncDetail>("QuoteSyncDetails");
+            //builder.EntitySet<QuoteSyncDetail>("QuoteSyncDetails");
             
             builder.EntitySet<Quote>("Quotes");
 
@@ -108,7 +108,7 @@ namespace ODataSDataWebApiDemo3
             builder.EntitySet<UnprocessedInvoice>("UnprocessedInvoices");
             builder.EntitySet<User>("Users");
             builder.EntitySet<Version>("Versions");
-            builder.EntitySet<VersionInfo>("VersionInfos");
+            //builder.EntitySet<VersionInfo>("VersionInfos");
             builder.EntitySet<WorkOrderAttachment>("WorkOrderAttachments");
             builder.EntitySet<WorkOrderDetail>("WorkOrderDetails");
             builder.EntitySet<WorkOrder>("WorkOrders");
