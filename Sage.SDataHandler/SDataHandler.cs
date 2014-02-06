@@ -10,6 +10,7 @@ using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Text;
 using Sage.SDataHandler.JsonHelpers;
+using System.Collections;
 
 namespace Sage.SDataHandler
 {
@@ -19,6 +20,7 @@ namespace Sage.SDataHandler
         private const string JSON_MEDIA_TYPE = "application/json";
         private const string SDATA_MEDIA_TYPE_PARAM_VND = "vnd.sage";
         private const string SDATA_MEDIA_TYPE_VALUE_VND = "sdata";
+        private const string SDATA_MEDIA_TYPE_VALUE_FORMATTED = "formatted";
 
         public SDataHandler(HttpConfiguration httpConfiguration)
         {
@@ -32,6 +34,15 @@ namespace Sage.SDataHandler
         protected async override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            var acceptHeader = request.Headers.Accept;
+            bool acceptsSData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
+                                    x.Parameters.Any(p => p.Value == SDATA_MEDIA_TYPE_VALUE_VND) );
+
+            if (!acceptsSData)
+            {
+                return await base.SendAsync(request, cancellationToken);
+            }
+
             Uri originalUri = request.RequestUri;
 
             // check if a param like format=json was in original uri and set Accept header
@@ -44,21 +55,21 @@ namespace Sage.SDataHandler
 
             var response = await base.SendAsync(request, cancellationToken);
 
-            var acceptHeader = request.Headers.Accept;
-
-            if (ResponseIsValid(response) &&
-                acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
-                                    x.Parameters.Any(p => p.Value == SDATA_MEDIA_TYPE_VALUE_VND)
-                ) )
+            if (ResponseIsValid(response))
             {
                 StringBuilder nwContent = await TransformToSData(response);
 
                 if (nwContent.Length > 0)
                 {
-                    //System.Json
-                    //string fmtJson = JsonHelper.FormatJson(nwContent.ToString());
-                    string fmtJson = new JsonFormatter(nwContent.ToString()).Format();
-                    response.Content = new StringContent(fmtJson);
+                    string payload = nwContent.ToString();
+                    if (acceptHeader.Any(x => x.Parameters.Any(p => p.Value == SDATA_MEDIA_TYPE_VALUE_FORMATTED)))
+                    {
+                        // only format payload (add line breaks, etc.) if user asks for it with header
+                        payload = new JsonFormatter(payload).Format();
+                    }
+
+                    response.Content = new StringContent(payload);
+
                 }
             }
 
@@ -84,15 +95,23 @@ namespace Sage.SDataHandler
                 nwContent = nwContent.Replace("odata.nextLink", "next");
                 nwContent = nwContent.Replace("$orderby", "orderby");
             }
+            else if (responseObject is IEnumerable)
+            {
+                nwContent = nwContent.Replace("\"Items\":[", "\"$resources\":[");
+            }
             else if (origContent.Contains(ODATA_ELEMENT_KEY))
             {
                 int posmetaend = origContent.IndexOf(ODATA_ELEMENT_KEY);
                 nwContent = nwContent.Remove(0, posmetaend + ODATA_ELEMENT_KEY.Length);
                 nwContent = nwContent.Insert(0, "{\n");
             }
+
+            nwContent = nwContent.Replace("__SDataMetadata__", "$");
+            nwContent = nwContent.Replace("odata.metadata", "$metadata");
+
             return nwContent;
         }
-        
+
 
         private bool ResponseIsValid(HttpResponseMessage response)
         {
@@ -105,10 +124,10 @@ namespace Sage.SDataHandler
             {
                 return false;
             }
-            
+
             return true;
         }
 
-        }
+    }
 
 }
