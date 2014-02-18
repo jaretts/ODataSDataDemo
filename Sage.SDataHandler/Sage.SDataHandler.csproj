@@ -36,12 +36,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DotNetOpenAuth">
-      <HintPath>..\Lib\ThirdParty\DotNetOpenAuth.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\Lib\ThirdParty\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -49,20 +43,8 @@
     <Reference Include="Newtonsoft.Json.Net35">
       <HintPath>..\Lib\ThirdParty\Newtonsoft.Json.Net35.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel">
-      <HintPath>..\packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
-    </Reference>
     <Reference Include="Obsidian.Client.Support">
       <HintPath>..\..\..\..\..\sageid_sdk\Samples\DOTNET\Libs\Obsidian.Client.Support.dll</HintPath>
-    </Reference>
-    <Reference Include="Sage.Authorisation">
-      <HintPath>..\..\..\..\..\sageid_sdk\Samples\DOTNET\Libs\Sage.Authorisation.dll</HintPath>
-    </Reference>
-    <Reference Include="Sage.Authorisation.Client">
-      <HintPath>..\..\..\..\..\sageid_sdk\Samples\DOTNET\Libs\Sage.Authorisation.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Sage.Authorisation.Server">
-      <HintPath>..\..\..\..\..\sageid_sdk\Samples\DOTNET\Libs\Sage.Authorisation.Server.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.IdentityModel" />
@@ -82,9 +64,6 @@
     <Reference Include="System.Web.Http.WebHost, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.1.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
-    </Reference>
-    <Reference Include="Thinktecture.IdentityModel">
-      <HintPath>..\packages\Thinktecture.IdentityModel.2.1.5\lib\net40\Thinktecture.IdentityModel.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
@@ -112,9 +91,6 @@
     <Compile Include="SingleResourceMetadata.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Lib\ThirdParty\DotNetOpenAuth.LICENSE" />
-    <None Include="Lib\ThirdParty\log4net.LICENSE" />
-    <None Include="Lib\ThirdParty\Newtonsof.Json.LICENSE" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -123,22 +99,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Lib\Google.Apis.Authentication.OAuth2.dll" />
-    <Content Include="Lib\Google.Apis.Authentication.OAuth2.pdb" />
-    <Content Include="Lib\Google.Apis.Authentication.OAuth2.xml" />
-    <Content Include="Lib\Google.Apis.dll" />
-    <Content Include="Lib\Google.Apis.pdb" />
-    <Content Include="Lib\Google.Apis.Silverlight.dll" />
-    <Content Include="Lib\Google.Apis.Silverlight.pdb" />
-    <Content Include="Lib\Google.Apis.Tools.CodeGen.dll" />
-    <Content Include="Lib\Google.Apis.Tools.CodeGen.pdb" />
-    <Content Include="Lib\Google.Apis.Tools.CodeGen.xml" />
-    <Content Include="Lib\Google.Apis.xml" />
-    <Content Include="Lib\ServiceGenerator.exe" />
-    <Content Include="Lib\ServiceGenerator.pdb" />
-    <Content Include="Lib\ServiceGenerator.xml" />
-    <Content Include="Lib\ThirdParty\DotNetOpenAuth.dll" />
-    <Content Include="Lib\ThirdParty\log4net.dll" />
     <Content Include="Lib\ThirdParty\Newtonsoft.Json.Net35.dll" />
     <Content Include="Lib\ThirdParty\Newtonsoft.Json.Net35.xml" />
     <Content Include="Lib\ThirdParty\Newtonsoft.Json.Silverlight.dll" />

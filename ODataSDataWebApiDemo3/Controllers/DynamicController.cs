@@ -65,7 +65,7 @@ namespace ODataSDataWebApiDemo3.Controllers
         {
             update.SetNephosKey(Guid.Parse(key));
             GetDatabaseContext().Set<TEntity>().Attach(update);
-            GetDatabaseContext().Entry(update).State = System.Data.EntityState.Modified;
+            GetDatabaseContext().Entry(update).State = System.Data.Entity.EntityState.Modified;
             GetDatabaseContext().SaveChanges();
 
             return update;
