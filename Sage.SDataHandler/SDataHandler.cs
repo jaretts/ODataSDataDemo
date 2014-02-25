@@ -11,6 +11,7 @@ using System.Web.Http.Dispatcher;
 using System.Text;
 using Sage.SDataHandler.JsonHelpers;
 using System.Collections;
+using Sage.SData.Entity;
 
 namespace Sage.SDataHandler
 {
@@ -22,9 +23,36 @@ namespace Sage.SDataHandler
         private const string SDATA_MEDIA_TYPE_VALUE_VND = "sdata";
         private const string SDATA_MEDIA_TYPE_VALUE_FORMATTED = "formatted";
 
+        private string _targetRoutPrefix;
+
+        public string TargetRoutPrefix
+        {
+            get { return _targetRoutPrefix; }
+            set 
+            {
+                _targetRoutPrefix = value;
+
+                if (!String.IsNullOrEmpty(_targetRoutPrefix))
+                {
+                    _targetRoutPrefix = _targetRoutPrefix.Trim();
+
+                    if(!_targetRoutPrefix.StartsWith("/"))
+                        _targetRoutPrefix = "/" + _targetRoutPrefix;
+
+                }
+            }
+        }
+
         public SDataHandler(HttpConfiguration httpConfiguration)
         {
             InnerHandler = new HttpControllerDispatcher(httpConfiguration);
+        }
+
+        // if targetRoutPrefix is not empty or null then only URLs starting 
+        // with that prefix will be mapped to OData
+        public SDataHandler(string init_targetRoutPrefix)
+        {
+            TargetRoutPrefix = init_targetRoutPrefix;
         }
 
         public SDataHandler()
@@ -35,8 +63,9 @@ namespace Sage.SDataHandler
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var acceptHeader = request.Headers.Accept;
+
             bool acceptsSData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
-                                    x.Parameters.Any(p => p.Value == SDATA_MEDIA_TYPE_VALUE_VND) );
+                                x.Parameters.Any(p => p.Value == SDATA_MEDIA_TYPE_VALUE_VND));
 
             if (!acceptsSData)
             {
@@ -44,6 +73,14 @@ namespace Sage.SDataHandler
             }
 
             Uri originalUri = request.RequestUri;
+
+            if (TargetRoutPrefix != null && TargetRoutPrefix.Trim() != ""
+                && !originalUri.AbsolutePath.StartsWith(TargetRoutPrefix))
+            {
+                // there's a targeRoutePrefix specified so skip mapping if this
+                // URL doesn't start with the prefix
+                return await base.SendAsync(request, cancellationToken);
+            }
 
             // check if a param like format=json was in original uri and set Accept header
             //SDataUriUtil.SetAcceptJsonHeader(request, originalUri);
@@ -87,7 +124,10 @@ namespace Sage.SDataHandler
 
             if (responseObject is IQueryable)
             {
-                nwContent = nwContent.Replace("\"value\":[", "\"$resources\":[");
+                string pagingInfo = BuildPagingResponse(response, responseObject);
+
+                nwContent = nwContent.Replace("\"value\":[", pagingInfo + "\"$resources\":[");
+
                 nwContent = nwContent.Replace("odata.count", "$totalResults");
                 nwContent = nwContent.Replace("odata.metadata", "$url");
                 nwContent = nwContent.Replace("$metadata#", "");
@@ -97,7 +137,9 @@ namespace Sage.SDataHandler
             }
             else if (responseObject is IEnumerable)
             {
-                nwContent = nwContent.Replace("\"Items\":[", "\"$resources\":[");
+                string pagingInfo = BuildPagingResponse(response, responseObject);
+
+                nwContent = nwContent.Replace("\"Items\":[", pagingInfo + "\"$resources\":[");
             }
             else if (origContent.Contains(ODATA_ELEMENT_KEY))
             {
@@ -110,6 +152,28 @@ namespace Sage.SDataHandler
             nwContent = nwContent.Replace("odata.metadata", "$metadata");
 
             return nwContent;
+        }
+
+        private static string BuildPagingResponse(HttpResponseMessage response, object responseObject)
+        {
+            int startIndex = SDataUriUtil.GetSDataStartIndexValue(response.RequestMessage.RequestUri);
+            int count = 0;
+            if (responseObject is IQueryable<SDataEntity>)
+            {
+                IQueryable<SDataEntity> q = (responseObject as IQueryable<SDataEntity>);
+                count = q.Count<SDataEntity>();
+            }
+            else if (responseObject is IEnumerable)
+            {
+                var enumer = (responseObject as IEnumerable).GetEnumerator();
+                while (enumer.MoveNext())
+                {
+                    count++;
+                }
+            }
+
+            string pagingInfo = "\"$startIndex\":" + startIndex + ", \"$itemsPerPage\":" + count + ",";
+            return pagingInfo;
         }
 
 

@@ -9,11 +9,14 @@ using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Query;
 using Sage.SData.Entity;
+using System.Web.Http.OData.Query.Validators;
+using Microsoft.Data.OData;
+using Microsoft.Data.OData.Query.SemanticAst;
 
 namespace ODataSDataWebApiDemo3.Controllers
 {
     abstract public class DynamicController<TEntity,TKey> : System.Web.Http.OData.EntitySetController<TEntity, string>
-        where TEntity : SDataEntity
+        where TEntity : SDataBaseEntity
     {
 
         NephosEntities dbContext;
@@ -29,10 +32,42 @@ namespace ODataSDataWebApiDemo3.Controllers
             return dbContext;
         }
 
+        /* This method relies OData filtering, etc., to happen higher in the stack and not in our code
         //[Queryable(AllowedQueryOptions = AllowedQueryOptions.All)]
-        public override IQueryable<TEntity> Get()
+        public override IEnumerable<TEntity> Get()
         {
             return GetDatabaseContext().Set<TEntity>().Where( e => e.Tenant_Id == VALID_TENANT_ID);
+        }
+        */
+
+        // this method illustrates 
+        public override IQueryable<TEntity> Get()
+        {
+            ODataQueryOptions<TEntity> options = QueryOptions;
+
+            IQueryable results = GetDatabaseContext()
+                            .Set<TEntity>().Where( e => e.Tenant_Id == VALID_TENANT_ID);
+
+            var validationSettings = new ODataValidationSettings()
+            {
+                // Initialize settings as needed.
+                MaxTop = 10
+            };
+            ODataQuerySettings settings = new ODataQuerySettings()
+            {
+                PageSize = 10,
+            };
+
+            if (options.Filter != null)
+            {
+                // set validator that restricts client's filtering 
+                options.Filter.Validator = new QuoteQueryValidator();
+                options.Validate(validationSettings);
+
+                results = options.Filter.ApplyTo(results, settings);
+            }
+
+            return results.Cast<TEntity>();
         }
 
         protected override TEntity GetEntityByKey(string key)
@@ -63,7 +98,7 @@ namespace ODataSDataWebApiDemo3.Controllers
 
         protected override TEntity UpdateEntity([FromODataUri] string key, TEntity update)
         {
-            update.SetNephosKey(Guid.Parse(key));
+            update.SetKey(Guid.Parse(key));
             GetDatabaseContext().Set<TEntity>().Attach(update);
             GetDatabaseContext().Entry(update).State = System.Data.Entity.EntityState.Modified;
             GetDatabaseContext().SaveChanges();
@@ -74,7 +109,7 @@ namespace ODataSDataWebApiDemo3.Controllers
         protected override TEntity CreateEntity(TEntity entity)
         {
             Guid newId = Guid.NewGuid();
-            entity.SetNephosKey(newId);
+            entity.SetKey(newId);
             GetDatabaseContext().Set<TEntity>().Add(entity);
             GetDatabaseContext().SaveChanges();
             return entity;
@@ -95,4 +130,20 @@ namespace ODataSDataWebApiDemo3.Controllers
             return;
         }
     }
+
+    public class QuoteQueryValidator : FilterQueryValidator
+    {
+        List<string> restrictedProperties = new List<string>() { "Tenant_Id" };
+
+        public override void ValidateSingleValuePropertyAccessNode(SingleValuePropertyAccessNode propertyAccessNode, ODataValidationSettings settings)
+        {
+
+            if (restrictedProperties.Contains<string>(propertyAccessNode.Property.Name))
+            {
+                throw new ODataException(string.Format("{0} is an invalid filter property"));
+            }
+            base.ValidateSingleValuePropertyAccessNode(propertyAccessNode, settings);
+        }
+    }
+
 }
