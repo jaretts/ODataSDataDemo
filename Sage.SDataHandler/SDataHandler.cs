@@ -12,6 +12,7 @@ using System.Text;
 using Sage.SDataHandler.JsonHelpers;
 using System.Collections;
 using Sage.SData.Entity;
+using System.Collections.Specialized;
 
 namespace Sage.SDataHandler
 {
@@ -21,6 +22,8 @@ namespace Sage.SDataHandler
         private const string JSON_MEDIA_TYPE = "application/json";
         private const string SDATA_MEDIA_TYPE_PARAM_VND = "vnd.sage";
         private const string SDATA_MEDIA_TYPE_VALUE_VND = "sdata";
+        private const string ODATA_MEDIA_TYPE_VALUE_VND = "odata";
+        private const string ODATA_MEDIA_TYPE_PARAM_VND = "odata";
         private const string SDATA_MEDIA_TYPE_VALUE_FORMATTED = "formatted";
 
         private string _targetRoutPrefix;
@@ -64,13 +67,31 @@ namespace Sage.SDataHandler
         {
             var acceptHeader = request.Headers.Accept;
 
-            bool acceptsSData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
-                                x.Parameters.Any(p => p.Value == SDATA_MEDIA_TYPE_VALUE_VND));
+            bool acceptsJson =  acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE);
 
-            if (!acceptsSData)
+            if(!acceptsJson)
             {
                 return await base.SendAsync(request, cancellationToken);
             }
+
+            bool acceptsSData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
+                                x.Parameters.Any(p => p.Name == SDATA_MEDIA_TYPE_VALUE_VND));
+
+            if (!acceptsSData)
+            {
+                // does not mention SData check if OData mentioned
+                bool acceptsOData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
+                                    x.Parameters.Any(p => p.Name == ODATA_MEDIA_TYPE_VALUE_VND));
+
+                if (acceptsOData)
+                {
+                    // OData JSON Request; i.e. Accept header equals: application/json;odata=[verbose, etc]
+                    return await base.SendAsync(request, cancellationToken);
+                }
+
+                // consumer asked for JSON but did not indicated SData or OData so default is return SData; just continue
+            }
+
 
             Uri originalUri = request.RequestUri;
 
@@ -156,7 +177,21 @@ namespace Sage.SDataHandler
 
         private static string BuildPagingResponse(HttpResponseMessage response, object responseObject)
         {
-            int startIndex = SDataUriUtil.GetSDataStartIndexValue(response.RequestMessage.RequestUri);
+            int startIndex; // = SDataUriUtil.GetSDataStartIndexValue(response.RequestMessage.RequestUri);
+            NameValueCollection query = response.RequestMessage.RequestUri.ParseQueryString();
+            if (query.AllKeys.Contains(SDataUriKeys.SDATA_STARTINDEX))
+            {
+                startIndex = int.Parse(query[SDataUriKeys.SDATA_STARTINDEX]);
+            }
+            else if (query.AllKeys.Contains(SDataUriKeys.ODATA_STARTINDEX))
+            {
+                startIndex = int.Parse(query[SDataUriKeys.ODATA_STARTINDEX]) + 1;
+            }
+            else
+            {
+                startIndex = 1;
+            }
+
             int count = 0;
             if (responseObject is IQueryable<SDataEntity>)
             {
