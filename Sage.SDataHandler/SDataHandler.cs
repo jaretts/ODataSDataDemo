@@ -99,7 +99,6 @@ namespace Sage.SDataHandler
 
             }
 
-
             Uri originalUri = request.RequestUri;
 
             if (TargetRoutPrefix != null && TargetRoutPrefix.Trim() != ""
