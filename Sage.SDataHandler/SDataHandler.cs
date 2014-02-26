@@ -20,6 +20,7 @@ namespace Sage.SDataHandler
     {
         private const string ODATA_ELEMENT_KEY = "@Element\",";
         private const string JSON_MEDIA_TYPE = "application/json";
+        private const string ALL_MEDIA_TYPE = "*/*";
         private const string SDATA_MEDIA_TYPE_PARAM_VND = "vnd.sage";
         private const string SDATA_MEDIA_TYPE_VALUE_VND = "sdata";
         private const string ODATA_MEDIA_TYPE_VALUE_VND = "odata";
@@ -67,29 +68,35 @@ namespace Sage.SDataHandler
         {
             var acceptHeader = request.Headers.Accept;
 
-            bool acceptsJson =  acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE);
+            bool acceptsAll = acceptHeader.Any(x => x.MediaType == ALL_MEDIA_TYPE);
 
-            if(!acceptsJson)
+            if (!acceptsAll)
             {
-                return await base.SendAsync(request, cancellationToken);
-            }
+                bool acceptsJson = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE);
 
-            bool acceptsSData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
-                                x.Parameters.Any(p => p.Name == SDATA_MEDIA_TYPE_VALUE_VND));
-
-            if (!acceptsSData)
-            {
-                // does not mention SData check if OData mentioned
-                bool acceptsOData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
-                                    x.Parameters.Any(p => p.Name == ODATA_MEDIA_TYPE_VALUE_VND));
-
-                if (acceptsOData)
+                if (!acceptsJson)
                 {
-                    // OData JSON Request; i.e. Accept header equals: application/json;odata=[verbose, etc]
                     return await base.SendAsync(request, cancellationToken);
                 }
 
-                // consumer asked for JSON but did not indicated SData or OData so default is return SData; just continue
+                bool acceptsSData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
+                                    x.Parameters.Any(p => p.Name == SDATA_MEDIA_TYPE_VALUE_VND));
+
+                if (!acceptsSData)
+                {
+                    // does not mention SData check if OData mentioned
+                    bool acceptsOData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
+                                        x.Parameters.Any(p => p.Name == ODATA_MEDIA_TYPE_VALUE_VND));
+
+                    if (acceptsOData)
+                    {
+                        // OData JSON Request; i.e. Accept header equals: application/json;odata=[verbose, etc]
+                        return await base.SendAsync(request, cancellationToken);
+                    }
+
+                    // consumer asked for JSON but did not indicated SData or OData so default is return SData; just continue
+                }
+
             }
 
 
