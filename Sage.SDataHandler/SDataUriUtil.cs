@@ -14,6 +14,10 @@ namespace Sage.SDataHandler
             NameValueCollection query = requestUri.ParseQueryString();
             string translatedUriQuery = "";
             bool foundStartIndex = false, foundOrderBy = false;
+            string rPath = requestUri.AbsolutePath;
+
+            int idxResourceSelector = rPath.IndexOf('(');
+            bool isSingleResourceRequest = idxResourceSelector > 0 && rPath.IndexOf(')') > idxResourceSelector;
 
             foreach (string key in query.AllKeys) // <-- No duplicates returned.
             {
@@ -52,7 +56,9 @@ namespace Sage.SDataHandler
                 translatedUriQuery += ReplaceParamName(translatedKey, query[key]);
             }
 
-            if (convertDirection == SDataUriKeys.CONVERT_TO_ODATA && !translatedUriQuery.Contains("$inlinecount"))
+            if (!isSingleResourceRequest &&
+                convertDirection == SDataUriKeys.CONVERT_TO_ODATA && 
+                !translatedUriQuery.Contains("$inlinecount"))
             {
                 // add "$inlinecount=allpages" so total count will appear in results
                 if (translatedUriQuery.Length > 0)

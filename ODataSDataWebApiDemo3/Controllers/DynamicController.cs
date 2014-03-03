@@ -70,11 +70,28 @@ namespace ODataSDataWebApiDemo3.Controllers
             return results.Cast<TEntity>();
         }
 
+        // Returns single entity that is NOT queryable (does not support include, select, etc.)
         protected override TEntity GetEntityByKey(string key)
         {
-            Guid custKey = Guid.Parse(key);
+            Guid custKey = KeyToGuid(key);
 
             return GetDatabaseContext().Set<TEntity>().FirstOrDefault(c => c.Id == custKey);
+        }
+         
+        [Queryable]
+        // Returns single entity that IS queryable (support include, select, etc.); e.g /Customer('selector')?include=Contacts
+        // OData/Web Api requires naming convention to support queryable single entity request so
+        // derived class must declare method following convention Get[+ EntityName] (e.g. GetCustomer note NOT plural name)
+        protected SingleResult<TEntity> GetEntity(string key)
+        {
+            Guid custKey = KeyToGuid(key);
+
+            IQueryable<TEntity> custs = GetDatabaseContext().Set<TEntity>()
+                                                .Where(c => c.Id == custKey);
+
+            SingleResult<TEntity> retVal = SingleResult.Create(custs);
+
+            return retVal;
         }
 
         protected override void Dispose(bool disposing)
@@ -86,7 +103,7 @@ namespace ODataSDataWebApiDemo3.Controllers
 
         protected override TEntity PatchEntity([FromODataUri] string key, Delta<TEntity> patch)
         {
-            Guid gKey = Guid.Parse(key);
+            Guid gKey = KeyToGuid(key);
             var entity = GetDatabaseContext().Set<TEntity>().FirstOrDefault(c => c.Id == gKey);
             if (entity == null) throw new HttpResponseException(HttpStatusCode.NotFound);
 
@@ -98,7 +115,7 @@ namespace ODataSDataWebApiDemo3.Controllers
 
         protected override TEntity UpdateEntity([FromODataUri] string key, TEntity update)
         {
-            update.SetKey(Guid.Parse(key));
+            update.SetKey(KeyToGuid(key));
             GetDatabaseContext().Set<TEntity>().Attach(update);
             GetDatabaseContext().Entry(update).State = System.Data.Entity.EntityState.Modified;
             GetDatabaseContext().SaveChanges();
@@ -122,12 +139,29 @@ namespace ODataSDataWebApiDemo3.Controllers
 
         public override void Delete([FromODataUri] string key)
         {
-            Guid gKey = Guid.Parse(key);
+            Guid gKey = KeyToGuid(key);
             var entity = GetDatabaseContext().Set<TEntity>().FirstOrDefault(c => c.Id == gKey);
             GetDatabaseContext().Set<TEntity>().Remove(entity);
             GetDatabaseContext().SaveChanges();
 
             return;
+        }
+
+        private Guid KeyToGuid(string key)
+        {
+            key = key.Trim();
+
+            if (key.StartsWith("\'"))
+            {
+                key = key.Substring(1);
+            }
+
+            if (key.EndsWith("\'"))
+            {
+                key = key.Remove(key.LastIndexOf("\'"));
+            }
+
+            return Guid.Parse(key);
         }
     }
 
