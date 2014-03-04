@@ -8,7 +8,14 @@ namespace Sage.SData.Entity
 {
     abstract public class SDataEntity
     {
-        abstract public void SetNephosKey(System.Guid idValue);
-        public System.Guid Id { get; set; }
+        // Property name aliasing not supported but coming
+        // see: https://aspnetwebstack.codeplex.com/discussions/462757
+        //[DataMember(Name = "$descriptor")]
+        //public string descriptor { get; set; }
+        public string __SDataMetadata__descriptor { get; set; }
+
+        public string __SDataMetadata__key { get; set; }
+
+        public System.DateTime __SDataMetadata__updated { get; set; }
     }
 }

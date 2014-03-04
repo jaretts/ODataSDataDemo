@@ -14,6 +14,10 @@ namespace Sage.SDataHandler
             NameValueCollection query = requestUri.ParseQueryString();
             string translatedUriQuery = "";
             bool foundStartIndex = false, foundOrderBy = false;
+            string rPath = requestUri.AbsolutePath;
+
+            int idxResourceSelector = rPath.IndexOf('(');
+            bool isSingleResourceRequest = idxResourceSelector > 0 && rPath.IndexOf(')') > idxResourceSelector;
 
             foreach (string key in query.AllKeys) // <-- No duplicates returned.
             {
@@ -52,7 +56,9 @@ namespace Sage.SDataHandler
                 translatedUriQuery += ReplaceParamName(translatedKey, query[key]);
             }
 
-            if (convertDirection == SDataUriKeys.CONVERT_TO_ODATA && !translatedUriQuery.Contains("$inlinecount"))
+            if (!isSingleResourceRequest &&
+                convertDirection == SDataUriKeys.CONVERT_TO_ODATA && 
+                !translatedUriQuery.Contains("$inlinecount"))
             {
                 // add "$inlinecount=allpages" so total count will appear in results
                 if (translatedUriQuery.Length > 0)
@@ -75,9 +81,12 @@ namespace Sage.SDataHandler
             }
             else
             {
+                /* Only works for Nephos where every resource has an 'ID' property
                 if (foundStartIndex && !foundOrderBy)
                 {
                     // need to add an orderby because can't do skip without it
+                    // this only works for Nephos and projects following EF convention
+                    // where every Entity has an ID property
                     if (convertDirection == SDataUriKeys.CONVERT_TO_ODATA)
                     {
                         translatedUriQuery += "&" + SDataUriKeys.ODATA_ORDERBY;
@@ -89,10 +98,11 @@ namespace Sage.SDataHandler
 
                     translatedUriQuery += "='ID'";
                 }
-
+                 */
                 // Need to replace the old Query portion on Uri
                 retValue = ReplaceQueryPortionOfUri(requestUri, translatedUriQuery);
             }
+
             return retValue;
         }
 
@@ -136,8 +146,7 @@ namespace Sage.SDataHandler
                     break;
                 case SDataUriKeys.SDATA_INCLUDE:
                     // odata include ($expand) not working so map back to include and handle in repository or controllers
-                    //translatedKey = SDataUriKeys.ODATA_INCLUDE;
-                    translatedKey = SDataUriKeys.SDATA_INCLUDE;
+                    translatedKey = SDataUriKeys.ODATA_INCLUDE;
                     break;
                 case SDataUriKeys.SDATA_SELECT:
                     translatedKey = SDataUriKeys.ODATA_SELECT;
@@ -231,25 +240,7 @@ namespace Sage.SDataHandler
 
             if (!String.IsNullOrEmpty(translatedKey))
             {
-                // TODO remove this. This is a workaround for error in Argos where 
-                // a query like: "(UserID eq 1 and (Status eq 0) and (ProjectID eq \"1\") )"
-                // is sent but ProjectID is not a numeric so there should not be quo aroud it
-                // this is a workaround for POC that simply finds ID (all should be numeric) and 
-                // removes quo if URI where contains quo
-                if (value != null && value.Contains("ID eq \""))
-                {
-                    // need to strip quo
-                    // TODO fix Argos Client should not have " around ProjectID
-                    int quoPos = value.IndexOf("ID eq \"") + "ID eq \"".Length - 1;
-
-                    value = value.Remove(quoPos, 1);
-
-                    int quoPos2 = value.IndexOf('"', quoPos);
-
-                    value = value.Remove(quoPos2, 1);
-                }
-
-                retValue = translatedKey + "=" + value;
+                 retValue = translatedKey + "=" + value;
             }
 
             return retValue;

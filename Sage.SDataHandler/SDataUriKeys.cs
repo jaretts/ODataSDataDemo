@@ -16,6 +16,9 @@ namespace Sage.SDataHandler
 
         public const String HEADER_SDATA_TRANSFORMED = "SDataTransformed";
 
+        public const String SDATA_BATCH = "$batch";
+        public const String ODATA_BATCH = "Batch";
+
         public const String SDATA_STARTINDEX = "startindex";
         public const String ODATA_STARTINDEX = "$skip";
 

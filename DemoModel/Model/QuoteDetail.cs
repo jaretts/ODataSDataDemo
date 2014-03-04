@@ -22,11 +22,8 @@ namespace DemoModel.Model
         public System.DateTime UpdatedOn { get; set; }
         public System.Guid Quote_Id { get; set; }
         public Nullable<System.Guid> InventoryItem_Id { get; set; }
-        public string External_Id { get; set; }
-        public string ExternalReference { get; set; }
-        public string SyncHashKey { get; set; }
-        public short SyncEndpoint_Id { get; set; }
-        public int SyncEndpointTick { get; set; }
         public short EntityStatus { get; set; }
+    
+        public virtual QuoteSyncDetail QuoteSyncDetail { get; set; }
     }
 }

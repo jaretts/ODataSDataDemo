@@ -13,6 +13,15 @@ namespace ODataSDataWebApiDemo3.Controllers
 {
     public class CustomersController : DynamicController<Customer, string>
     {
+
+        [Queryable]
+        // Queryable single entity (i.e. include support) requires naming convention so declare
+        // method Get[+ EntityName] like below and call helper method GetEntity in base
+        public SingleResult<Customer> GetCustomer(string key)
+        {
+            return base.GetEntity(key);
+        }
+
         public IQueryable<Tenant> GetTenantFromCustomer([FromODataUri] string key)
         {
             Guid custKey = Guid.Parse(key);
@@ -22,14 +31,13 @@ namespace ODataSDataWebApiDemo3.Controllers
             return tens;
         }
 
-        public IQueryable<Quote> GetQuoteFromCustomer([FromODataUri] string key)
+        public IQueryable<Order> GetOrdersFromCustomer([FromODataUri] string key)
         {
             Guid custKey = Guid.Parse(key);
 
-            IQueryable<Quote> tens = GetDatabaseContext().Set<Quote>().Where(t => t.Customer_Id == custKey);
+            IQueryable<Order> tens = GetDatabaseContext().Set<Order>().Where(t => t.Customer_Id == custKey);
 
             return tens;
         }
-
     }
 }

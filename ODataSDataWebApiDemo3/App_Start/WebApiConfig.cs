@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.OData.Builder;
+using System.Web.Http.OData.Query;
+using System.Web.Http.OData.Routing;
 
 namespace ODataSDataWebApiDemo3
 {
@@ -23,7 +25,15 @@ namespace ODataSDataWebApiDemo3
             // Uncomment the following line of code to enable query support for actions with an IQueryable or IQueryable<T> return type.
             // To avoid processing unexpected or malicious queries, use the validation settings on QueryableAttribute to validate incoming queries.
             // For more information, visit http://go.microsoft.com/fwlink/?LinkId=279712.
-            config.EnableQuerySupport();
+            var queryAttribute = new QueryableAttribute()
+            {
+                AllowedQueryOptions = AllowedQueryOptions.All, // or just some: AllowedQueryOptions.Top | AllowedQueryOptions.Skip,
+                MaxTop = 100,
+                PageSize = 100,
+            };
+            config.EnableQuerySupport(queryAttribute);
+            // no argument also allowed and then specify queryable attribute on controller
+            //config.EnableQuerySupport();
 
             // To disable tracing in your application, please comment out or remove the following line of code
             // For more information, refer to: http://www.asp.net/web-api
@@ -34,6 +44,34 @@ namespace ODataSDataWebApiDemo3
         {
             ODataModelBuilder builder = new ODataConventionModelBuilder();
             builder.EntitySet<Customer>("Customers");
+
+            var selfAction = builder.Entity<Customer>().TransientAction("self");
+            selfAction.HasActionLink(ctx =>
+            {
+                // or simply: return ctx.Url.Request.RequestUri
+                var cust = ctx.EntityInstance as Customer;
+                if (cust.EntityStatus == cust.EntityStatus)
+                {
+                    return new Uri(ctx.Url.ODataLink(
+                        new EntitySetPathSegment(ctx.EntitySet),
+                        new KeyValuePathSegment(cust.Id.ToString()))); //,
+                        //new ActionPathSegment(checkoutAction.Name)));
+                }
+                else
+                {
+                    return null;
+                }
+            }, followsConventions: false);
+
+            var editAction = builder.Entity<Customer>().TransientAction("edit");
+            editAction.HasActionLink(ctx =>
+            {
+                var cust = ctx.EntityInstance as Customer;
+                return new Uri(ctx.Url.ODataLink(new EntitySetPathSegment(ctx.EntitySet),
+                    new KeyValuePathSegment(cust.Id.ToString())));
+            } , followsConventions: false);
+
+
             builder.EntitySet<Order>("Orders");
             builder.EntitySet<Address>("Addresses");
             builder.EntitySet<ClickToPayPayment>("ClickToPayPayments");
@@ -54,6 +92,9 @@ namespace ODataSDataWebApiDemo3
             builder.EntitySet<Order>("Orders");
             builder.EntitySet<Payment>("Payments");
             builder.EntitySet<QuoteDetail>("QuoteDetails");
+
+            builder.EntitySet<QuoteSyncDetail>("QuoteSyncDetails");
+            
             builder.EntitySet<Quote>("Quotes");
 
             //not found ? builder.EntitySet<RelatedInventoryItem>("RelatedInventoryItems");
