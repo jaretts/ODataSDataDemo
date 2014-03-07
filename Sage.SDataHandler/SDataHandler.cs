@@ -13,6 +13,7 @@ using Sage.SDataHandler.JsonHelpers;
 using System.Collections;
 using Sage.SData.Entity;
 using System.Collections.Specialized;
+using System.Net.Http.Headers;
 
 namespace Sage.SDataHandler
 {
@@ -98,7 +99,6 @@ namespace Sage.SDataHandler
                 }
 
             }
-
             Uri originalUri = request.RequestUri;
 
             if (TargetRoutPrefix != null && TargetRoutPrefix.Trim() != ""
@@ -116,6 +116,10 @@ namespace Sage.SDataHandler
             Uri newUri = SDataUriUtil.TranslateUri(originalUri, SDataUriKeys.CONVERT_TO_ODATA);
 
             request.RequestUri = newUri;
+
+            MediaTypeWithQualityHeaderValue noMetadataHeader = new MediaTypeWithQualityHeaderValue("application/json");
+            noMetadataHeader.Parameters.Add( new NameValueWithParametersHeaderValue("odata","nometadata") );
+            request.Headers.Accept.Add(noMetadataHeader);
 
             var response = await base.SendAsync(request, cancellationToken);
 
@@ -154,13 +158,17 @@ namespace Sage.SDataHandler
                 string pagingInfo = BuildPagingResponse(response, responseObject);
 
                 nwContent = nwContent.Replace("\"value\":[", pagingInfo + "\"$resources\":[");
-
                 nwContent = nwContent.Replace("odata.count", "$totalResults");
-                nwContent = nwContent.Replace("odata.metadata", "$url");
-                nwContent = nwContent.Replace("$metadata#", "");
+
+                /* no longer required because now Accept Header is set to: application/json;odata=nometadata 
                 nwContent = nwContent.Replace("$skip", "startindex");
+                
                 nwContent = nwContent.Replace("odata.nextLink", "next");
                 nwContent = nwContent.Replace("$orderby", "orderby");
+
+                nwContent = nwContent.Replace("odata.metadata", "$url");
+                nwContent = nwContent.Replace("$metadata#", "");
+                 */
             }
             else if (responseObject is IEnumerable)
             {
@@ -168,15 +176,18 @@ namespace Sage.SDataHandler
 
                 nwContent = nwContent.Replace("\"Items\":[", pagingInfo + "\"$resources\":[");
             }
+
+            /* no longer required because now Accept Header is set to: application/json;odata=nometadata 
             else if (origContent.Contains(ODATA_ELEMENT_KEY))
             {
                 int posmetaend = origContent.IndexOf(ODATA_ELEMENT_KEY);
                 nwContent = nwContent.Remove(0, posmetaend + ODATA_ELEMENT_KEY.Length);
                 nwContent = nwContent.Insert(0, "{\n");
             }
+            nwContent = nwContent.Replace("odata.metadata", "$metadata");
+             */
 
             nwContent = nwContent.Replace("__SDataMetadata__", "$");
-            nwContent = nwContent.Replace("odata.metadata", "$metadata");
 
             return nwContent;
         }
