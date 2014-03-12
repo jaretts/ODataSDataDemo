@@ -14,6 +14,7 @@ using System.Collections;
 using Sage.SData.Entity;
 using System.Collections.Specialized;
 using System.Net.Http.Headers;
+using Sage.SDataHandler.ContentTypes;
 
 namespace Sage.SDataHandler
 {
@@ -114,9 +115,10 @@ namespace Sage.SDataHandler
 
             // convert any SData query keys (where, startIndex, etc.) 
             Uri newUri = SDataUriUtil.TranslateUri(originalUri, SDataUriKeys.CONVERT_TO_ODATA);
-
             request.RequestUri = newUri;
 
+            // replace consumers Accept Header with OData nometadata so we get json in format we want
+            request.Headers.Accept.Clear();
             MediaTypeWithQualityHeaderValue noMetadataHeader = new MediaTypeWithQualityHeaderValue("application/json");
             noMetadataHeader.Parameters.Add( new NameValueWithParametersHeaderValue("odata","nometadata") );
             request.Headers.Accept.Add(noMetadataHeader);
@@ -125,109 +127,11 @@ namespace Sage.SDataHandler
 
             if (ResponseIsValid(response))
             {
-                StringBuilder nwContent = await TransformToSData(response);
-
-                if (nwContent.Length > 0)
-                {
-                    string payload = nwContent.ToString();
-                    if (acceptHeader.Any(x => x.Parameters.Any(p => p.Value == SDATA_MEDIA_TYPE_VALUE_FORMATTED)))
-                    {
-                        // only format payload (add line breaks, etc.) if user asks for it with header
-                        payload = new JsonFormatter(payload).Format();
-                    }
-
-                    response.Content = new StringContent(payload);
-
-                }
+                response.Content = new SDataContent(response);
             }
 
             return response;
         }
-
-        private static async Task<StringBuilder> TransformToSData(HttpResponseMessage response)
-        {
-            object responseObject;
-            response.TryGetContentValue(out responseObject);
-
-            var origContent = await response.Content.ReadAsStringAsync();
-
-            StringBuilder nwContent = new StringBuilder(origContent);
-
-            if (responseObject is IQueryable)
-            {
-                string pagingInfo = BuildPagingResponse(response, responseObject);
-
-                nwContent = nwContent.Replace("\"value\":[", pagingInfo + "\"$resources\":[");
-                nwContent = nwContent.Replace("odata.count", "$totalResults");
-
-                /* no longer required because now Accept Header is set to: application/json;odata=nometadata 
-                nwContent = nwContent.Replace("$skip", "startindex");
-                
-                nwContent = nwContent.Replace("odata.nextLink", "next");
-                nwContent = nwContent.Replace("$orderby", "orderby");
-
-                nwContent = nwContent.Replace("odata.metadata", "$url");
-                nwContent = nwContent.Replace("$metadata#", "");
-                 */
-            }
-            else if (responseObject is IEnumerable)
-            {
-                string pagingInfo = BuildPagingResponse(response, responseObject);
-
-                nwContent = nwContent.Replace("\"Items\":[", pagingInfo + "\"$resources\":[");
-            }
-
-            /* no longer required because now Accept Header is set to: application/json;odata=nometadata 
-            else if (origContent.Contains(ODATA_ELEMENT_KEY))
-            {
-                int posmetaend = origContent.IndexOf(ODATA_ELEMENT_KEY);
-                nwContent = nwContent.Remove(0, posmetaend + ODATA_ELEMENT_KEY.Length);
-                nwContent = nwContent.Insert(0, "{\n");
-            }
-            nwContent = nwContent.Replace("odata.metadata", "$metadata");
-             */
-
-            nwContent = nwContent.Replace("__SDataMetadata__", "$");
-
-            return nwContent;
-        }
-
-        private static string BuildPagingResponse(HttpResponseMessage response, object responseObject)
-        {
-            int startIndex; // = SDataUriUtil.GetSDataStartIndexValue(response.RequestMessage.RequestUri);
-            NameValueCollection query = response.RequestMessage.RequestUri.ParseQueryString();
-            if (query.AllKeys.Contains(SDataUriKeys.SDATA_STARTINDEX))
-            {
-                startIndex = int.Parse(query[SDataUriKeys.SDATA_STARTINDEX]);
-            }
-            else if (query.AllKeys.Contains(SDataUriKeys.ODATA_STARTINDEX))
-            {
-                startIndex = int.Parse(query[SDataUriKeys.ODATA_STARTINDEX]) + 1;
-            }
-            else
-            {
-                startIndex = 1;
-            }
-
-            int count = 0;
-            if (responseObject is IQueryable<SDataEntity>)
-            {
-                IQueryable<SDataEntity> q = (responseObject as IQueryable<SDataEntity>);
-                count = q.Count<SDataEntity>();
-            }
-            else if (responseObject is IEnumerable)
-            {
-                var enumer = (responseObject as IEnumerable).GetEnumerator();
-                while (enumer.MoveNext())
-                {
-                    count++;
-                }
-            }
-
-            string pagingInfo = "\"$startIndex\":" + startIndex + ", \"$itemsPerPage\":" + count + ",";
-            return pagingInfo;
-        }
-
 
         private bool ResponseIsValid(HttpResponseMessage response)
         {

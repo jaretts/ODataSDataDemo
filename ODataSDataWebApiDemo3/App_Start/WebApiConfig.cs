@@ -44,7 +44,7 @@ namespace ODataSDataWebApiDemo3
         {
             ODataModelBuilder builder = new ODataConventionModelBuilder();
             builder.EntitySet<Customer>("Customers");
-
+            /*
             var selfAction = builder.Entity<Customer>().TransientAction("self");
             selfAction.HasActionLink(ctx =>
             {
@@ -70,7 +70,7 @@ namespace ODataSDataWebApiDemo3
                 return new Uri(ctx.Url.ODataLink(new EntitySetPathSegment(ctx.EntitySet),
                     new KeyValuePathSegment(cust.Id.ToString())));
             } , followsConventions: false);
-
+            */
 
             builder.EntitySet<Order>("Orders");
             builder.EntitySet<Address>("Addresses");
