@@ -16,6 +16,6 @@ namespace Sage.SData.Entity
 
         public string __SDataMetadata__key { get; set; }
 
-        public System.DateTime __SDataMetadata__updated { get; set; }
+        public Nullable<System.DateTimeOffset> __SDataMetadata__updated { get; set; }
     }
 }

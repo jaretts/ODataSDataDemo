@@ -20,7 +20,7 @@ namespace Sage.SDataHandler.ContentTypes
 
         private const string COLLECTION_NAME_ODATA  = "\"value\":[";
         private const string COLLECTION_NAME_API    = "\"Items\":[";
-        private const string COLLECTION_NAME_SDATA  = "\"$resources\":[";
+        private const string COLLECTION_NAME_SDATA = "\"$resources\":[";
 
         private const string SDATA_METADATA_PREFIX = "__SDataMetadata__";
 
@@ -74,14 +74,6 @@ namespace Sage.SDataHandler.ContentTypes
 
                     int respContentType = GetContentType();
 
-                    string pagingInfo = null;
-
-                    if (respContentType == CONTENT_API_COLLECTION ||
-                        respContentType == CONTENT_ODATA_COLLECTION)
-                    {
-                        pagingInfo = BuildPagingResponse();
-                    }
-
                     string line;
                     bool collectionFound = false;
 
@@ -90,18 +82,26 @@ namespace Sage.SDataHandler.ContentTypes
                         if (!collectionFound)
                         {
                             if (respContentType == CONTENT_ODATA_COLLECTION
-                                && line.Contains(COLLECTION_NAME_ODATA))
+                                || respContentType == CONTENT_API_COLLECTION)
                             {
-                                line = line.Replace(COLLECTION_NAME_ODATA, pagingInfo + COLLECTION_NAME_SDATA);
-                                line = line.Replace("odata.count", "$totalResults");
+                                // payload contains a collection
+                                if (line.Contains(COLLECTION_NAME_ODATA))
+                                {
+                                    line = line.Replace(COLLECTION_NAME_ODATA, BuildPagingResponse() + COLLECTION_NAME_SDATA);
+                                    line = line.Replace("odata.count", "$totalResults");
 
-                                collectionFound = true;
+                                    collectionFound = true;
+                                }
+                                else if (line.Contains(COLLECTION_NAME_API))
+                                {
+                                    line = line.Replace(COLLECTION_NAME_API, BuildPagingResponse() + COLLECTION_NAME_SDATA);
+
+                                    collectionFound = true;
+                                }
                             }
-                            else if (respContentType == CONTENT_API_COLLECTION
-                                && line.Contains(COLLECTION_NAME_API))
+                            else
                             {
-                                line = line.Replace(COLLECTION_NAME_API, pagingInfo + COLLECTION_NAME_SDATA);
-
+                                // if payload does not contain a collection don't keep searching
                                 collectionFound = true;
                             }
                         }

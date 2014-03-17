@@ -18,7 +18,7 @@ using Sage.SDataHandler.ContentTypes;
 
 namespace Sage.SDataHandler
 {
-    public class SDataHandler : DelegatingHandler //AuthenticationHandler
+    public class SDataMessageHandler : DelegatingHandler //AuthenticationHandler
     {
         private const string ODATA_ELEMENT_KEY = "@Element\",";
         private const string JSON_MEDIA_TYPE = "application/json";
@@ -49,19 +49,19 @@ namespace Sage.SDataHandler
             }
         }
 
-        public SDataHandler(HttpConfiguration httpConfiguration)
+        public SDataMessageHandler(HttpConfiguration httpConfiguration)
         {
             InnerHandler = new HttpControllerDispatcher(httpConfiguration);
         }
 
         // if targetRoutPrefix is not empty or null then only URLs starting 
         // with that prefix will be mapped to OData
-        public SDataHandler(string init_targetRoutPrefix)
+        public SDataMessageHandler(string init_targetRoutPrefix)
         {
             TargetRoutPrefix = init_targetRoutPrefix;
         }
 
-        public SDataHandler()
+        public SDataMessageHandler()
         {
         }
 

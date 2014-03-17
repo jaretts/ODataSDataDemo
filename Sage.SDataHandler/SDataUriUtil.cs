@@ -108,24 +108,21 @@ namespace Sage.SDataHandler
 
         private static void ConvertStartIndexValue(NameValueCollection query, string key, int convertDirection)
         {
-            // make sure this is a key to an SData StartIndex or OData $skip
-            if (String.Equals(key, SDataUriKeys.SDATA_STARTINDEX) || String.Equals(key, SDataUriKeys.ODATA_STARTINDEX))
+            if (key.Equals(SDataUriKeys.SDATA_STARTINDEX, StringComparison.InvariantCultureIgnoreCase)
+                && convertDirection == SDataUriKeys.CONVERT_TO_ODATA)
             {
-                // if startIndex then need to convert the value of this param because
-                // OData is 0 based and SData is 1 based
                 int startIndx = int.Parse(query[key]);
-                if (convertDirection == SDataUriKeys.CONVERT_TO_ODATA && String.Equals(key, SDataUriKeys.SDATA_STARTINDEX))
-                {
-                    // need to decrement to convert startIndex to $skip
-                    startIndx = Math.Max(startIndx - 1, 0);
-                }
-                else if (convertDirection == SDataUriKeys.CONVERT_TO_SDATA && String.Equals(key, SDataUriKeys.ODATA_STARTINDEX))
-                {
-                    // need to increment to convert $skip to startIndex
-                    //startIndx++;
-                }
+                startIndx = Math.Max(startIndx - 1, 0);
                 query[key] = "" + startIndx;
             }
+            /*
+            else if (key.Equals(SDataUriKeys.SDATA_STARTINDEX, StringComparison.InvariantCultureIgnoreCase)
+                && convertDirection == SDataUriKeys.CONVERT_TO_SDATA)
+            {
+                // need to increment to convert $skip to startIndex
+                //startIndx++;
+            }
+             */
         }
 
 

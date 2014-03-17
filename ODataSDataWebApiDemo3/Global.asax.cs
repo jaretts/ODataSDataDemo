@@ -18,6 +18,7 @@ namespace ODataSDataWebApiDemo3
     {
         protected void Application_Start()
         {
+
             AreaRegistration.RegisterAllAreas();
 
             //WebApiConfig.Register(GlobalConfiguration.Configuration);
@@ -27,7 +28,7 @@ namespace ODataSDataWebApiDemo3
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            GlobalConfiguration.Configuration.MessageHandlers.Add(new SDataHandler());
+            GlobalConfiguration.Configuration.MessageHandlers.Add(new SDataMessageHandler());
 
         }
 
