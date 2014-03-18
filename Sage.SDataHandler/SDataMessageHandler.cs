@@ -110,16 +110,13 @@ namespace Sage.SDataHandler
                 return await base.SendAsync(request, cancellationToken);
             }
 
-            // check if a param like format=json was in original uri and set Accept header
-            //SDataUriUtil.SetAcceptJsonHeader(request, originalUri);
-
-            // convert any SData query keys (where, startIndex, etc.) 
+            // convert SData query keys (where, startIndex, etc.) 
             Uri newUri = SDataUriUtil.TranslateUri(originalUri, SDataUriKeys.CONVERT_TO_ODATA);
             request.RequestUri = newUri;
 
-            // replace consumers Accept Header with OData nometadata so we get json in format we want
+            // replace consumer's Accept Header with OData nometadata so we get json in format we want
             request.Headers.Accept.Clear();
-            MediaTypeWithQualityHeaderValue noMetadataHeader = new MediaTypeWithQualityHeaderValue("application/json");
+            MediaTypeWithQualityHeaderValue noMetadataHeader = new MediaTypeWithQualityHeaderValue(JSON_MEDIA_TYPE);
             noMetadataHeader.Parameters.Add( new NameValueWithParametersHeaderValue("odata","nometadata") );
             request.Headers.Accept.Add(noMetadataHeader);
 
