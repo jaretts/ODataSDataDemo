@@ -42,59 +42,42 @@
     <AssemblyOriginatorKeyFile>SageCommonPlatform.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json.Net35">
-      <HintPath>..\Lib\ThirdParty\Newtonsoft.Json.Net35.dll</HintPath>
-    </Reference>
-    <Reference Include="Obsidian.Client.Support">
-      <HintPath>..\..\..\..\..\sageid_sdk\Samples\DOTNET\Libs\Obsidian.Client.Support.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.1.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.1.1\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.1.0\lib\net45\System.Web.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Http.WebHost, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.1.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.1.1\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http.WebHost, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.1.1\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
-    <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentTypes\SDataContent.cs" />
-    <Compile Include="JsonHelpers\JsonHelper.cs" />
-    <Compile Include="JsonHelpers\JsonFormatter.cs" />
     <Compile Include="SDataEntity.cs" />
-    <Compile Include="SDataModelEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SDataCollectionMetadata.cs" />
+    <Compile Include="Metadata\SDataCollectionMetadata.cs" />
     <Compile Include="SDataMessageHandler.cs" />
-    <Compile Include="SDataRoutesUtil.cs" />
-    <Compile Include="SDataUriKeys.cs" />
-    <Compile Include="SDataUriUtil.cs" />
-    <Compile Include="SingleResourceMetadata.cs" />
+    <Compile Include="Uris\SDataUriKeys.cs" />
+    <Compile Include="Uris\SDataUriUtil.cs" />
+    <Compile Include="Metadata\SingleResourceMetadata.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
@@ -106,14 +89,9 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Lib\ThirdParty\Newtonsoft.Json.Net35.dll" />
-    <Content Include="Lib\ThirdParty\Newtonsoft.Json.Net35.xml" />
-    <Content Include="Lib\ThirdParty\Newtonsoft.Json.Silverlight.dll" />
-    <Content Include="Lib\ThirdParty\nunit.framework.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
