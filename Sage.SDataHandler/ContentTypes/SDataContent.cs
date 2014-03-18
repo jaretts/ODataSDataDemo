@@ -23,7 +23,7 @@ namespace Sage.SDataHandler.ContentTypes
         private const string COLLECTION_NAME_API    = "\"Items\":[";
         private const string COLLECTION_NAME_SDATA = "\"$resources\":[";
 
-        // Get rid of this as soon as support for property name Aliasing is supported
+        // Eliminate this as soon as support for property name Aliasing is supported
         private const string SDATA_METADATA_PROPNAME_PREFIX = "__SDataMetadata__";
         private const string SDATA_METADATA_ACTUAL_PREFIX = "$";
 
@@ -34,6 +34,10 @@ namespace Sage.SDataHandler.ContentTypes
         HttpResponseMessage origResponse;
         object responseObject;
 
+        /// <summary>
+        /// SDataContent transforms OData/Web API Content/Response to SData
+        /// </summary>
+        /// <param name="response">The response containing the Content/Payload to transform</param>
         public SDataContent(HttpResponseMessage response)
         {
             origResponse = response;
@@ -88,7 +92,7 @@ namespace Sage.SDataHandler.ContentTypes
                         {
                             // payload contains a collection so convert the array's property name 
                             // from "Item" or "Value" to SData's "$resource". This should be found 
-                            // in second line so then stop scanning and just copy the rest of the payload
+                            // in second line so after this stop scanning and just copy the rest of the payload
                             if (line.Contains(COLLECTION_NAME_ODATA))
                             {
                                 line = line.Replace(COLLECTION_NAME_ODATA, BuildPagingResponse() + COLLECTION_NAME_SDATA);

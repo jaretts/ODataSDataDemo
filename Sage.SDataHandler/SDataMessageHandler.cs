@@ -28,31 +28,20 @@ namespace Sage.SDataHandler
         private const string ODATA_MEDIA_TYPE_PARAM_VND = "odata";
 
         private string _targetRoutPrefix;
-        public string TargetRoutPrefix
-        {
-            get { return _targetRoutPrefix; }
-            set 
-            {
-                _targetRoutPrefix = value;
-
-                if (!String.IsNullOrEmpty(_targetRoutPrefix))
-                {
-                    _targetRoutPrefix = _targetRoutPrefix.Trim();
-
-                    if(!_targetRoutPrefix.StartsWith("/"))
-                        _targetRoutPrefix = "/" + _targetRoutPrefix;
-
-                }
-            }
-        }
 
         public SDataMessageHandler(HttpConfiguration httpConfiguration)
         {
             InnerHandler = new HttpControllerDispatcher(httpConfiguration);
         }
 
-        // if targetRoutPrefix is not empty or null then only URLs starting 
-        // with that prefix will be mapped to OData
+        /// <summary>
+        /// Creates Message Handler that only converts requests/Url starting with the 
+        /// targetRoutePrefix
+        /// </summary>
+        /// <param name="init_targetRoutPrefix">
+        /// if targetRoutPrefix is not empty or null then only URLs starting with that prefix
+        /// are mapped to OData; all other requests just pass through as is
+        /// </param>
         public SDataMessageHandler(string init_targetRoutPrefix)
         {
             TargetRoutPrefix = init_targetRoutPrefix;
@@ -150,6 +139,24 @@ namespace Sage.SDataHandler
             }
 
             return true;
+        }
+
+        private string TargetRoutPrefix
+        {
+            get { return _targetRoutPrefix; }
+            set
+            {
+                _targetRoutPrefix = value;
+
+                if (!String.IsNullOrEmpty(_targetRoutPrefix))
+                {
+                    _targetRoutPrefix = _targetRoutPrefix.Trim();
+
+                    if (!_targetRoutPrefix.StartsWith("/"))
+                        _targetRoutPrefix = "/" + _targetRoutPrefix;
+
+                }
+            }
         }
 
     }
