@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Runtime.Serialization;
 using System.Net.Http;
+using Sage.SDataHandler.Uris;
 
 namespace Sage.SDataHandler
 {
@@ -63,7 +64,7 @@ namespace Sage.SDataHandler
                         this.ItemsPerPage = enumResponseObject.Count();
 
                         int nxtStart = ItemsPerPage + StartIndex;
-                        int countParam = SDataUriUtil.GetSDataCountValue(reqUri);
+                        int countParam = SDataUriUtil.GetSDataCountValue(reqUri); 
                         if (countParam < 0)
                             countParam = 10;
 

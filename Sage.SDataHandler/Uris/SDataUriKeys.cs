@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Web;
 
-namespace Sage.SDataHandler
+namespace Sage.SDataHandler.Uris
 {
     public class SDataUriKeys
     {

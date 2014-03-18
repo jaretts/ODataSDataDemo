@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Web;
 
-namespace Sage.SDataHandler
+namespace Sage.SDataHandler.Uris
 {
     public class SDataUriUtil
     {

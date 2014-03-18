@@ -9,28 +9,25 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Text;
-using Sage.SDataHandler.JsonHelpers;
 using System.Collections;
 using Sage.SData.Entity;
 using System.Collections.Specialized;
 using System.Net.Http.Headers;
 using Sage.SDataHandler.ContentTypes;
+using Sage.SDataHandler.Uris;
 
 namespace Sage.SDataHandler
 {
-    public class SDataMessageHandler : DelegatingHandler //AuthenticationHandler
+    public class SDataMessageHandler : DelegatingHandler
     {
-        private const string ODATA_ELEMENT_KEY = "@Element\",";
         private const string JSON_MEDIA_TYPE = "application/json";
         private const string ALL_MEDIA_TYPE = "*/*";
         private const string SDATA_MEDIA_TYPE_PARAM_VND = "vnd.sage";
         private const string SDATA_MEDIA_TYPE_VALUE_VND = "sdata";
         private const string ODATA_MEDIA_TYPE_VALUE_VND = "odata";
         private const string ODATA_MEDIA_TYPE_PARAM_VND = "odata";
-        private const string SDATA_MEDIA_TYPE_VALUE_FORMATTED = "formatted";
 
         private string _targetRoutPrefix;
-
         public string TargetRoutPrefix
         {
             get { return _targetRoutPrefix; }
@@ -68,40 +65,15 @@ namespace Sage.SDataHandler
         protected async override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var acceptHeader = request.Headers.Accept;
-
-            bool acceptsAll = acceptHeader.Any(x => x.MediaType == ALL_MEDIA_TYPE);
-
-            if (!acceptsAll)
+            if(!ValidateAcceptsSData(request.Headers.Accept))
             {
-                bool acceptsJson = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE);
-
-                if (!acceptsJson)
-                {
-                    return await base.SendAsync(request, cancellationToken);
-                }
-
-                bool acceptsSData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
-                                    x.Parameters.Any(p => p.Name == SDATA_MEDIA_TYPE_VALUE_VND));
-
-                if (!acceptsSData)
-                {
-                    // does not mention SData check if OData mentioned
-                    bool acceptsOData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
-                                        x.Parameters.Any(p => p.Name == ODATA_MEDIA_TYPE_VALUE_VND));
-
-                    if (acceptsOData)
-                    {
-                        // OData JSON Request; i.e. Accept header equals: application/json;odata=[verbose, etc]
-                        return await base.SendAsync(request, cancellationToken);
-                    }
-
-                    // consumer asked for JSON but did not indicated SData or OData so default is return SData; just continue
-                }
-
+                // consumer does NOT want SData so let Web API handle this as is
+                return await base.SendAsync(request, cancellationToken);
             }
+
             Uri originalUri = request.RequestUri;
 
+            // check if this server only specified some routes mapped to SData
             if (TargetRoutPrefix != null && TargetRoutPrefix.Trim() != ""
                 && !originalUri.AbsolutePath.StartsWith(TargetRoutPrefix))
             {
@@ -120,14 +92,49 @@ namespace Sage.SDataHandler
             noMetadataHeader.Parameters.Add( new NameValueWithParametersHeaderValue("odata","nometadata") );
             request.Headers.Accept.Add(noMetadataHeader);
 
+            // URL and Headers have been mapped to OData; we now have an OData request 
             var response = await base.SendAsync(request, cancellationToken);
 
             if (ResponseIsValid(response))
             {
+                // OData request was handled and is valid so now transform Content/Payload to SData
                 response.Content = new SDataContent(response);
             }
 
             return response;
+        }
+
+        private bool ValidateAcceptsSData(HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> acceptHeader)
+        {
+            if (acceptHeader != null && !acceptHeader.Any(x => x.MediaType == ALL_MEDIA_TYPE))
+            {
+                bool acceptsJson = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE);
+
+                if (!acceptsJson)
+                {
+                    return false;
+                }
+
+                bool acceptsSData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
+                                    x.Parameters.Any(p => p.Name == SDATA_MEDIA_TYPE_VALUE_VND));
+
+                if (!acceptsSData)
+                {
+                    // does not mention SData check if OData mentioned
+                    bool acceptsOData = acceptHeader.Any(x => x.MediaType == JSON_MEDIA_TYPE &&
+                                        x.Parameters.Any(p => p.Name == ODATA_MEDIA_TYPE_VALUE_VND));
+
+                    if (acceptsOData)
+                    {
+                        // OData JSON Request; i.e. Accept header equals: application/json;odata=[verbose, etc]
+                        return false;
+                    }
+
+                    // consumer asked for JSON but did not indicated SData or OData so default is return SData; just continue
+                }
+            }
+
+            return true;
         }
 
         private bool ResponseIsValid(HttpResponseMessage response)
