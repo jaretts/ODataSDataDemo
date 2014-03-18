@@ -22,7 +22,12 @@ namespace Sage.SDataHandler.ContentTypes
         private const string COLLECTION_NAME_API    = "\"Items\":[";
         private const string COLLECTION_NAME_SDATA = "\"$resources\":[";
 
-        private const string SDATA_METADATA_PREFIX = "__SDataMetadata__";
+        // Get rid of this as soon as support for property name Aliasing is supported
+        private const string SDATA_METADATA_PROPNAME_PREFIX = "__SDataMetadata__";
+        private const string SDATA_METADATA_ACTUAL_PREFIX = "$";
+
+        private const string PARAM_TOTALRESULT_SDATA = "$totalResults";
+        private const string PARAM_TOTALRESULT_ODATA = "odata.count";
 
         private HttpContent originalContent;
         HttpResponseMessage origResponse;
@@ -68,48 +73,40 @@ namespace Sage.SDataHandler.ContentTypes
                 StreamWriter outStream = null;
                 try
                 {
-
                     reader = new StreamReader(oContentStream);
                     outStream = new StreamWriter(targetStream);
 
                     int respContentType = GetContentType();
+                    bool searchForCollection = respContentType == CONTENT_ODATA_COLLECTION
+                                        || respContentType == CONTENT_API_COLLECTION;
 
-                    string line;
-                    bool collectionFound = false;
-
+                    string line; 
                     while ((line = reader.ReadLine()) != null)
                     {
-                        if (!collectionFound)
+                        if (searchForCollection)
                         {
-                            if (respContentType == CONTENT_ODATA_COLLECTION
-                                || respContentType == CONTENT_API_COLLECTION)
+                            // payload contains a collection so convert the array's property name 
+                            // from "Item" or "Value" to SData's "$resource". This should be found 
+                            // in second line so then stop scanning and just copy the rest of the payload
+                            if (line.Contains(COLLECTION_NAME_ODATA))
                             {
-                                // payload contains a collection
-                                if (line.Contains(COLLECTION_NAME_ODATA))
-                                {
-                                    line = line.Replace(COLLECTION_NAME_ODATA, BuildPagingResponse() + COLLECTION_NAME_SDATA);
-                                    line = line.Replace("odata.count", "$totalResults");
+                                line = line.Replace(COLLECTION_NAME_ODATA, BuildPagingResponse() + COLLECTION_NAME_SDATA);
+                                line = line.Replace(PARAM_TOTALRESULT_ODATA, PARAM_TOTALRESULT_SDATA);
 
-                                    collectionFound = true;
-                                }
-                                else if (line.Contains(COLLECTION_NAME_API))
-                                {
-                                    line = line.Replace(COLLECTION_NAME_API, BuildPagingResponse() + COLLECTION_NAME_SDATA);
-
-                                    collectionFound = true;
-                                }
+                                searchForCollection = false;
                             }
-                            else
+                            else if (line.Contains(COLLECTION_NAME_API))
                             {
-                                // if payload does not contain a collection don't keep searching
-                                collectionFound = true;
+                                line = line.Replace(COLLECTION_NAME_API, BuildPagingResponse() + COLLECTION_NAME_SDATA);
+
+                                searchForCollection = false;
                             }
                         }
 
-                        // this is required until property name aliasing is supported
+                        // this is required until property name aliasing is supported by WebAPI/OData serializer
                         // see: https://aspnetwebstack.codeplex.com/discussions/462757
-                        if(line.Contains(SDATA_METADATA_PREFIX))
-                            line = line.Replace(SDATA_METADATA_PREFIX, "$");
+                        if(line.Contains(SDATA_METADATA_PROPNAME_PREFIX))
+                            line = line.Replace(SDATA_METADATA_PROPNAME_PREFIX, SDATA_METADATA_ACTUAL_PREFIX);
 
                         outStream.WriteLine(line);
                     }
@@ -148,7 +145,7 @@ namespace Sage.SDataHandler.ContentTypes
 
         private string BuildPagingResponse()
         {
-            int startIndex; // = SDataUriUtil.GetSDataStartIndexValue(response.RequestMessage.RequestUri);
+            int startIndex;
             NameValueCollection query = origResponse.RequestMessage.RequestUri.ParseQueryString();
             if (query.AllKeys.Contains(SDataUriKeys.SDATA_STARTINDEX))
             {
@@ -166,6 +163,7 @@ namespace Sage.SDataHandler.ContentTypes
             int count = 0;
             if (responseObject is IQueryable<SDataEntity>)
             {
+                // whenever possible use queriable count; better performance
                 IQueryable<SDataEntity> q = (responseObject as IQueryable<SDataEntity>);
                 count = q.Count<SDataEntity>();
             }
