@@ -7,12 +7,12 @@ using System.Web;
 
 namespace Sage.SDataHandler.Uris
 {
-    public class SDataUriUtil
+    public static class SDataUriUtil
     {
         private const string PARAM_SEP = "&";
         private const string URL_QUERY_SEP = "?";
 
-        public static Uri TranslateUri(Uri requestUri)
+        public static Uri TransformToSData(this Uri requestUri)
         {
             NameValueCollection query = requestUri.ParseQueryString();
             bool isSingleResourceRequest = IsSingleResourceRequest(requestUri);

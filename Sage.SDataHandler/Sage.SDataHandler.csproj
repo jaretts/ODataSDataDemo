@@ -71,14 +71,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentTypes\SDataContent.cs" />
-    <Compile Include="Metadata\UriHelper.cs" />
     <Compile Include="SDataEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Metadata\SDataCollectionMetadata.cs" />
     <Compile Include="SDataMessageHandler.cs" />
     <Compile Include="Uris\SDataUriKeys.cs" />
     <Compile Include="Uris\SDataUriUtil.cs" />
-    <Compile Include="Metadata\SingleResourceMetadata.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

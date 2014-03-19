@@ -71,8 +71,8 @@ namespace Sage.SDataHandler
                 return await base.SendAsync(request, cancellationToken);
             }
 
-            // convert SData query keys (where, startIndex, etc.) 
-            Uri newUri = SDataUriUtil.TranslateUri(originalUri);
+            // convert/translate SData query keys (where, startIndex, etc.) 
+            Uri newUri = originalUri.TransformToSData();
             request.RequestUri = newUri;
 
             // replace consumer's Accept Header with OData nometadata so we get json in format we want

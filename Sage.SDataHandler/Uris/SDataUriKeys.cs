@@ -27,18 +27,6 @@ namespace Sage.SDataHandler.Uris
         public const String SDATA_SELECT = "select";
         public const String ODATA_SELECT = "$select";
 
-        /*
-        public static readonly Dictionary<string, string> ODATA_DICTIONARY
-                    = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
-                    {
-                        { SDATA_STARTINDEX, ODATA_STARTINDEX },
-                        { SDATA_COUNT, ODATA_COUNT },
-                        { SDATA_ORDERBY, ODATA_ORDERBY },
-                        { SDATA_INCLUDE, ODATA_INCLUDE },
-                        { SDATA_WHERE, ODATA_WHERE },
-                        { SDATA_SELECT, ODATA_SELECT },
-                    };
-        */
         public static readonly ReadOnlyDictionary<string, string> ODATA_DICTIONARY
                     = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
                     {
