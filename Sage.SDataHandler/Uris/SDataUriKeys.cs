@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Web;
@@ -8,17 +9,6 @@ namespace Sage.SDataHandler.Uris
 {
     public class SDataUriKeys
     {
-        public static MediaTypeWithQualityHeaderValue JSON_ACCEPT_HEADER
-                            = new MediaTypeWithQualityHeaderValue("application/" + SDataUriKeys.JSON_FORMAT_TYPE);
-
-        public const int CONVERT_TO_SDATA = 1;
-        public const int CONVERT_TO_ODATA = 2;
-
-        public const String HEADER_SDATA_TRANSFORMED = "SDataTransformed";
-
-        public const String SDATA_BATCH = "$batch";
-        public const String ODATA_BATCH = "Batch";
-
         public const String SDATA_STARTINDEX = "startindex";
         public const String ODATA_STARTINDEX = "$skip";
 
@@ -34,12 +24,32 @@ namespace Sage.SDataHandler.Uris
         public const String SDATA_WHERE = "where";
         public const String ODATA_WHERE = "$filter";
 
-        // OData select not implemented in Web API RC so must  be handled by controller
         public const String SDATA_SELECT = "select";
-        public const String ODATA_SELECT = SDATA_SELECT; // "$select";
+        public const String ODATA_SELECT = "$select";
 
-        public const String SDATA_FORMAT_PARAM = "format";
-        public const String JSON_FORMAT_TYPE = "json";
+        /*
+        public static readonly Dictionary<string, string> ODATA_DICTIONARY
+                    = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+                    {
+                        { SDATA_STARTINDEX, ODATA_STARTINDEX },
+                        { SDATA_COUNT, ODATA_COUNT },
+                        { SDATA_ORDERBY, ODATA_ORDERBY },
+                        { SDATA_INCLUDE, ODATA_INCLUDE },
+                        { SDATA_WHERE, ODATA_WHERE },
+                        { SDATA_SELECT, ODATA_SELECT },
+                    };
+        */
+        public static readonly ReadOnlyDictionary<string, string> ODATA_DICTIONARY
+                    = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+                    {
+                        { SDATA_STARTINDEX, ODATA_STARTINDEX },
+                        { SDATA_COUNT, ODATA_COUNT },
+                        { SDATA_ORDERBY, ODATA_ORDERBY },
+                        { SDATA_INCLUDE, ODATA_INCLUDE },
+                        { SDATA_WHERE, ODATA_WHERE },
+                        { SDATA_SELECT, ODATA_SELECT },
+                    }
+        );
 
-    }
+    }       
 }

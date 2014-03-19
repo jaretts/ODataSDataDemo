@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentTypes\SDataContent.cs" />
+    <Compile Include="Metadata\UriHelper.cs" />
     <Compile Include="SDataEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Metadata\SDataCollectionMetadata.cs" />

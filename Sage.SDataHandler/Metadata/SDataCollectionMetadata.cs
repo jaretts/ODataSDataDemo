@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Net.Http;
 using Sage.SDataHandler.Uris;
 
-namespace Sage.SDataHandler
+namespace Sage.SDataHandler.Metadata
 {
     [DataContract]
     public class SDataCollectionMetadata<T> where T : class
@@ -55,7 +55,7 @@ namespace Sage.SDataHandler
                 {
                     IEnumerable<T> enumResponseObject;
 
-                    this.StartIndex = SDataUriUtil.GetSDataStartIndexValue(reqUri);
+                    this.StartIndex = UriHelper.GetSDataStartIndexValue(reqUri);
                     httpResponse.TryGetContentValue<IEnumerable<T>>(out enumResponseObject);
 
                     if (enumResponseObject != null)
@@ -64,7 +64,7 @@ namespace Sage.SDataHandler
                         this.ItemsPerPage = enumResponseObject.Count();
 
                         int nxtStart = ItemsPerPage + StartIndex;
-                        int countParam = SDataUriUtil.GetSDataCountValue(reqUri); 
+                        int countParam = UriHelper.GetSDataCountValue(reqUri); 
                         if (countParam < 0)
                             countParam = 10;
 
