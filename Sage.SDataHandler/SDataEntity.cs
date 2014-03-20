@@ -6,8 +6,9 @@ using System.Web;
 
 namespace Sage.SData.Entity
 {
-    abstract public class SDataEntity
+    public class SDataEntity
     {
+        /*
         // Property name aliasing not supported but coming
         // see: https://aspnetwebstack.codeplex.com/discussions/462757
         //[DataMember(Name = "$descriptor")]
@@ -17,5 +18,6 @@ namespace Sage.SData.Entity
         public string __SDataMetadata__key { get; set; }
 
         public Nullable<System.DateTimeOffset> __SDataMetadata__updated { get; set; }
+         */
     }
 }

@@ -28,11 +28,7 @@ namespace Sage.SDataHandler
         private const string ODATA_MEDIA_TYPE_PARAM_VND = "odata";
 
         private string _targetRoutPrefix;
-
-        public SDataMessageHandler(HttpConfiguration httpConfiguration)
-        {
-            InnerHandler = new HttpControllerDispatcher(httpConfiguration);
-        }
+        private List<IContentMapper> maps = new List<IContentMapper>();
 
         /// <summary>
         /// Creates Message Handler that only converts requests/Url starting with the 
@@ -49,6 +45,11 @@ namespace Sage.SDataHandler
 
         public SDataMessageHandler()
         {
+        }
+
+        public void AddConentMap(IContentMapper mapper)
+        {
+            maps.Add(mapper);
         }
 
         protected async override Task<HttpResponseMessage> SendAsync(
@@ -87,7 +88,7 @@ namespace Sage.SDataHandler
             if (ResponseIsValid(response))
             {
                 // OData request was handled and is valid so now transform Content/Payload to SData
-                response.Content = new SDataContent(response);
+                response.Content = new SDataContent(response, maps);
             }
 
             return response;

@@ -1,5 +1,7 @@
 ﻿using DemoModel.Model;
 using Microsoft.Data.Edm;
+using Sage.SDataHandler;
+using Sage.SDataHandler.ContentTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +40,12 @@ namespace ODataSDataWebApiDemo3
             // To disable tracing in your application, please comment out or remove the following line of code
             // For more information, refer to: http://www.asp.net/web-api
             config.EnableSystemDiagnosticsTracing();
+
+            SDataMessageHandler sdataHandler = new SDataMessageHandler();
+            // optionally add mapper that's a work around for web api odata not supporting property name aiasing
+            sdataHandler.AddConentMap(new DefaultMetadataMap());
+            GlobalConfiguration.Configuration.MessageHandlers.Add(sdataHandler);
+
         }
 
         private static IEdmModel GetImplicitEDM()

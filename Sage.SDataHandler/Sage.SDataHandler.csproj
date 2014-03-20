@@ -70,6 +70,8 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContentTypes\DefaultMetadataMap.cs" />
+    <Compile Include="ContentTypes\IContentMapper.cs" />
     <Compile Include="ContentTypes\SDataContent.cs" />
     <Compile Include="SDataEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

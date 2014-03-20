@@ -23,12 +23,10 @@ namespace Sage.SDataHandler.ContentTypes
         private const string COLLECTION_NAME_API    = "\"Items\":[";
         private const string COLLECTION_NAME_SDATA = "\"$resources\":[";
 
-        // Eliminate this as soon as support for property name Aliasing is supported
-        private const string SDATA_METADATA_PROPNAME_PREFIX = "__SDataMetadata__";
-        private const string SDATA_METADATA_ACTUAL_PREFIX = "$";
-
         private const string PARAM_TOTALRESULT_SDATA = "$totalResults";
         private const string PARAM_TOTALRESULT_ODATA = "odata.count";
+
+        List<IContentMapper> maps;
 
         private HttpContent originalContent;
         HttpResponseMessage origResponse;
@@ -54,7 +52,20 @@ namespace Sage.SDataHandler.ContentTypes
             }
 
             origResponse.TryGetContentValue(out responseObject);
+        }
 
+        /// <summary>
+        /// SDataContent transforms OData/Web API Content/Response to SData
+        /// </summary>
+        /// <param name="response">The response containing the Content/Payload to transform</param>
+        /// <param name="maps">Optional list of maps to transform Content/Payload</param>
+        public SDataContent(HttpResponseMessage response, List<IContentMapper> init_maps)
+            : this(response)
+        {
+            if (init_maps != null && init_maps.Count > 0)
+            {
+                maps = init_maps;
+            }
         }
 
         protected override bool TryComputeLength(out long length)
@@ -108,10 +119,7 @@ namespace Sage.SDataHandler.ContentTypes
                             }
                         }
 
-                        // this is required until property name aliasing is supported by WebAPI/OData serializer
-                        // see: https://aspnetwebstack.codeplex.com/discussions/462757
-                        if(line.Contains(SDATA_METADATA_PROPNAME_PREFIX))
-                            line = line.Replace(SDATA_METADATA_PROPNAME_PREFIX, SDATA_METADATA_ACTUAL_PREFIX);
+                        line = CallOptionalMaps(line);
 
                         outStream.WriteLine(line);
                     }
@@ -131,6 +139,19 @@ namespace Sage.SDataHandler.ContentTypes
 
                 }
             }
+        }
+
+        private string CallOptionalMaps(string line)
+        {
+            if (maps != null)
+            {
+                foreach (var map in maps)
+                {
+                    line = map.Map(line);
+                }
+            }
+
+            return line;
         }
 
         private int GetContentType()

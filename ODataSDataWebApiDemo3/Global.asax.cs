@@ -28,8 +28,6 @@ namespace ODataSDataWebApiDemo3
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            GlobalConfiguration.Configuration.MessageHandlers.Add(new SDataMessageHandler());
-
         }
 
 
