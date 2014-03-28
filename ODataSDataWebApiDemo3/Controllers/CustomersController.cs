@@ -1,6 +1,7 @@
 ﻿using DemoModel;
 using DemoModel.Model;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -30,7 +31,6 @@ namespace ODataSDataWebApiDemo3.Controllers
             return retVal;
         }
 
-        [Queryable]
         public PageResult<Customer> Get(ODataQueryOptions<Customer> options)
         {
             Guid VALID_TENANT_ID = Guid.Parse("7b6791d5-8658-44e5-86bc-8181735d0bf7");
@@ -65,6 +65,8 @@ namespace ODataSDataWebApiDemo3.Controllers
 
            // if (options.SelectExpand != null)
              //   query = options.SelectExpand.ApplyTo(query, odataSettings);
+
+            //var resultList = new List<Customer>(query);
 
             var retValue = new PageResult<Customer>(
                     query as IEnumerable<Customer>,

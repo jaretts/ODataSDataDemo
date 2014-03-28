@@ -65,7 +65,7 @@ namespace Sage.SDataHandler
 
             // check if this server only specified some routes mapped to SData
             if (TargetRoutPrefix != null && TargetRoutPrefix.Trim() != ""
-                && !originalUri.AbsolutePath.StartsWith(TargetRoutPrefix))
+                && !originalUri.AbsolutePath.StartsWith(TargetRoutPrefix, StringComparison.InvariantCultureIgnoreCase))
             {
                 // there's a targeRoutePrefix specified so skip mapping if this
                 // URL doesn't start with the prefix
