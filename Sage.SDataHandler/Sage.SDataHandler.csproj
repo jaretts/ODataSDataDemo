@@ -70,9 +70,12 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContentTypes\DefaultErrorResponseBuilder.cs" />
     <Compile Include="ContentTypes\DefaultMetadataMap.cs" />
     <Compile Include="ContentTypes\IContentMapper.cs" />
+    <Compile Include="ContentTypes\IErrorResponseBuilder.cs" />
     <Compile Include="ContentTypes\SDataContent.cs" />
+    <Compile Include="ContentTypes\SDataDiagnosis.cs" />
     <Compile Include="SDataEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDataMessageHandler.cs" />

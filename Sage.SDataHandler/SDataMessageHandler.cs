@@ -15,6 +15,7 @@ using System.Collections.Specialized;
 using System.Net.Http.Headers;
 using Sage.SDataHandler.ContentTypes;
 using Sage.SDataHandler.Uris;
+using System.Net.Http.Formatting;
 
 namespace Sage.SDataHandler
 {
@@ -29,6 +30,8 @@ namespace Sage.SDataHandler
 
         private string _targetRoutPrefix;
         private List<IContentMapper> maps = new List<IContentMapper>();
+        private static bool transformError = false;
+        private IErrorResponseBuilder errResponseBuilder;
 
         /// <summary>
         /// Creates Message Handler that only converts requests/Url starting with the 
@@ -47,9 +50,14 @@ namespace Sage.SDataHandler
         {
         }
 
-        public void AddConentMap(IContentMapper mapper)
+        public void AddContentMap(IContentMapper mapper)
         {
             maps.Add(mapper);
+        }
+
+        public void SetErrorResponseBuilder(IErrorResponseBuilder init_errResponseBuilder)
+        {
+            errResponseBuilder = init_errResponseBuilder;
         }
 
         protected async override Task<HttpResponseMessage> SendAsync(
@@ -77,6 +85,7 @@ namespace Sage.SDataHandler
             request.RequestUri = newUri;
 
             // replace consumer's Accept Header with OData nometadata so we get json in format we want
+            var origAccept = request.Headers.Accept;
             request.Headers.Accept.Clear();
             MediaTypeWithQualityHeaderValue noMetadataHeader = new MediaTypeWithQualityHeaderValue(JSON_MEDIA_TYPE);
             noMetadataHeader.Parameters.Add( new NameValueWithParametersHeaderValue("odata","nometadata") );
@@ -89,6 +98,13 @@ namespace Sage.SDataHandler
             {
                 // OData request was handled and is valid so now transform Content/Payload to SData
                 response.Content = new SDataContent(response, maps);
+            }
+            else if (errResponseBuilder != null)
+            {
+                // add the original accepts back
+                origAccept.ToList().ForEach(i => request.Headers.Accept.Add(i));
+
+                response = errResponseBuilder.BuildErrorResponse(request, response);
             }
 
             return response;

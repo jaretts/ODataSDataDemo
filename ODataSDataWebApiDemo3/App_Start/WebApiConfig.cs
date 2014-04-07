@@ -43,7 +43,8 @@ namespace ODataSDataWebApiDemo3
 
             SDataMessageHandler sdataHandler = new SDataMessageHandler();
             // optionally add mapper that's a work around for web api odata not supporting property name aiasing
-            sdataHandler.AddConentMap(new DefaultMetadataMap());
+            sdataHandler.AddContentMap(new DefaultMetadataMap());
+            sdataHandler.SetErrorResponseBuilder(new DefaultErrorResponseBuilder());
             GlobalConfiguration.Configuration.MessageHandlers.Add(sdataHandler);
 
         }
