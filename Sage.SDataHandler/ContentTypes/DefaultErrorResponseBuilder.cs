@@ -12,7 +12,7 @@ namespace Sage.SDataHandler.ContentTypes
     public class DefaultErrorResponseBuilder : IErrorResponseBuilder
     {
 
-        public HttpResponseMessage BuildErrorResponse(HttpRequestMessage request, HttpResponseMessage response)
+        public virtual HttpResponseMessage BuildErrorResponse(HttpRequestMessage request, HttpResponseMessage response)
         {
             if (response.Content is ObjectContent<System.Web.Http.HttpError>)
             {
@@ -20,35 +20,44 @@ namespace Sage.SDataHandler.ContentTypes
 
                 if (result != null)
                 {
-                    var origStatusCode = response.StatusCode;
                     ObjectContent<System.Web.Http.HttpError> origErrorContent = (ObjectContent<System.Web.Http.HttpError>)response.Content;
                     HttpError errorVal = origErrorContent.Value as HttpError;
 
-                    SDataDiagnosis errorContent = new SDataDiagnosis()
-                    {
-                        severity = "Error",
-                        message = errorVal.ExceptionMessage + " " + errorVal.MessageDetail,
-                        stackTrace = errorVal.StackTrace
-                    };
-
-                    HttpResponseMessage errorResponse = new HttpResponseMessage()
-                    {
-                        StatusCode = origStatusCode,
-                        Content = new ObjectContent<SDataDiagnosis>(
-                            errorContent,
-                            result.Formatter,
-                            result.MediaType.MediaType)
-                    };
-                    response.Headers.ToList().ForEach(i => errorResponse.Headers.Add(i.Key, i.Value));
-
-                    response = errorResponse;
+                    response = BuildDiagnosisResponse(response, 
+                                        result, 
+                                        "", errorVal.ExceptionMessage + " " + errorVal.MessageDetail,
+                                        errorVal.StackTrace);
                 }
             }
 
             return response;
         }
 
-        private static ContentNegotiationResult FindContentNegotiation(HttpRequestMessage request)
+        protected static HttpResponseMessage BuildDiagnosisResponse(HttpResponseMessage response, 
+                                               ContentNegotiationResult result, string appCode, string errMessage, string errStackTrace)
+        {
+            var origStatusCode = response.StatusCode;
+            SDataDiagnosis errorContent = new SDataDiagnosis()
+            {
+                severity = "Error",
+                applicationCode = appCode,
+                message = errMessage,
+                stackTrace = errStackTrace
+            };
+
+            HttpResponseMessage errorResponse = new HttpResponseMessage()
+            {
+                StatusCode = origStatusCode,
+                Content = new ObjectContent<SDataDiagnosis>(
+                    errorContent,
+                    result.Formatter,
+                    result.MediaType.MediaType)
+            };
+            response.Headers.ToList().ForEach(i => errorResponse.Headers.Add(i.Key, i.Value));
+            return errorResponse;
+        }
+
+        public static ContentNegotiationResult FindContentNegotiation(HttpRequestMessage request)
         {
             IContentNegotiator negotiator = GlobalConfiguration.Configuration.Services.GetContentNegotiator();
             ContentNegotiationResult result = negotiator.Negotiate(
