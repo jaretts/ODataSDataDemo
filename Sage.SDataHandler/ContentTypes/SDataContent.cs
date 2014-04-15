@@ -1,6 +1,4 @@
-﻿using Sage.SData.Entity;
-using Sage.SDataHandler.Uris;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -8,29 +6,31 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Sage.SDataHandler.Uris;
+using Sage.SData.Entity;
+
 
 namespace Sage.SDataHandler.ContentTypes
 {
     class SDataContent : HttpContent
     {
-        private const int CONTENT_SINGLE_RESOURCE = 1;
-        private const int CONTENT_ODATA_COLLECTION = 2;
-        private const int CONTENT_API_COLLECTION = 3;
+        private const int ContentSingleResource = 1;
+        private const int ContentOdataCollection = 2;
+        private const int ContentApiCollection = 3;
 
-        private const string COLLECTION_NAME_ODATA  = "\"value\":[";
-        private const string COLLECTION_NAME_API    = "\"Items\":[";
-        private const string COLLECTION_NAME_SDATA = "\"$resources\":[";
+        private const string ParamTotalresultSdata = "$totalResults";
+        private const string ParamTotalresultOdata = "odata.count";
+        private const string ParamCollectionNameOdata = "value";
+        private const string ParamCollectionNameApi = "Items";
+        private const string ParamCollectionNameSdata = "$resources";
 
-        private const string PARAM_TOTALRESULT_SDATA = "$totalResults";
-        private const string PARAM_TOTALRESULT_ODATA = "odata.count";
+        readonly List<IContentMapper> maps;
 
-        List<IContentMapper> maps;
-
-        private HttpContent originalContent;
-        HttpResponseMessage origResponse;
-        object responseObject;
+        private readonly HttpContent originalContent;
+        readonly HttpResponseMessage origResponse;
+        readonly object responseObject;
 
         /// <summary>
         /// SDataContent transforms OData/Web API Content/Response to SData
@@ -43,12 +43,12 @@ namespace Sage.SDataHandler.ContentTypes
 
             if (originalContent == null)
             {
-                throw new ArgumentNullException("content");
+                throw new ArgumentNullException("response");
             }
 
             foreach (var header in originalContent.Headers)
             {
-                this.Headers.Add(header.Key, header.Value);
+                Headers.Add(header.Key, header.Value);
             }
 
             origResponse.TryGetContentValue(out responseObject);
@@ -58,13 +58,13 @@ namespace Sage.SDataHandler.ContentTypes
         /// SDataContent transforms OData/Web API Content/Response to SData
         /// </summary>
         /// <param name="response">The response containing the Content/Payload to transform</param>
-        /// <param name="maps">Optional list of maps to transform Content/Payload</param>
-        public SDataContent(HttpResponseMessage response, List<IContentMapper> init_maps)
+        /// <param name="initMaps"></param>
+        public SDataContent(HttpResponseMessage response, List<IContentMapper> initMaps)
             : this(response)
         {
-            if (init_maps != null && init_maps.Count > 0)
+            if (initMaps != null && initMaps.Count > 0)
             {
-                maps = init_maps;
+                maps = initMaps;
             }
         }
 
@@ -80,60 +80,58 @@ namespace Sage.SDataHandler.ContentTypes
             return TransformToSDataPayload(stream);
         }
 
+
         private async Task TransformToSDataPayload(Stream targetStream)
         {
-            //await oContentStream.CopyToAsync(targetStream);
             using (var oContentStream = await originalContent.ReadAsStreamAsync())
             {
-                StreamReader reader = null;
-                StreamWriter outStream = null;
+                JsonReader reader = null;
+                JsonWriter outStream = null;
+                int level = -1;
                 try
                 {
-                    reader = new StreamReader(oContentStream);
-                    outStream = new StreamWriter(targetStream);
+                    reader = new JsonTextReader(new StreamReader(oContentStream));
+                    outStream = new JsonTextWriter(new StreamWriter(targetStream));
 
                     int respContentType = GetContentType();
-                    bool searchForCollection = respContentType == CONTENT_ODATA_COLLECTION
-                                        || respContentType == CONTENT_API_COLLECTION;
+                    bool searchForCollection = respContentType == ContentOdataCollection
+                                               || respContentType == ContentApiCollection;
 
-                    string line; 
-                    while ((line = reader.ReadLine()) != null)
+                    while (reader.Read())
                     {
-                        if (searchForCollection)
+                        if (searchForCollection && level == 0 && reader.TokenType == JsonToken.PropertyName)
                         {
-                            // payload contains a collection so convert the array's property name 
-                            // from "Item" or "Value" to SData's "$resource". This should be found 
-                            // in second line so after this stop scanning and just copy the rest of the payload
-                            if (line.Contains(COLLECTION_NAME_ODATA))
+                            if ((string)reader.Value == ParamCollectionNameApi || (string)reader.Value == ParamCollectionNameOdata)
                             {
-                                line = line.Replace(COLLECTION_NAME_ODATA, BuildPagingResponse() + COLLECTION_NAME_SDATA);
-                                line = line.Replace(PARAM_TOTALRESULT_ODATA, PARAM_TOTALRESULT_SDATA);
-
-                                searchForCollection = false;
+                                WritePagingProperties(outStream);
+                                outStream.WritePropertyName(ParamCollectionNameSdata);
                             }
-                            else if (line.Contains(COLLECTION_NAME_API))
-                            {
-                                line = line.Replace(COLLECTION_NAME_API, BuildPagingResponse() + COLLECTION_NAME_SDATA);
-
-                                searchForCollection = false;
-                            }
+                            else if ((string)reader.Value == ParamTotalresultOdata)
+                                outStream.WritePropertyName(ParamTotalresultSdata);
+                            else
+                                outStream.WriteToken(reader, false);
                         }
-
-                        line = CallOptionalMaps(line);
-
-                        outStream.WriteLine(line);
+                        else if (reader.TokenType == JsonToken.PropertyName)
+                            outStream.WritePropertyName(CallOptionalMaps((string)reader.Value));
+                        else
+                        {
+                            if (reader.TokenType == JsonToken.StartObject)
+                                level++;
+                            else if (reader.TokenType == JsonToken.EndObject)
+                                level--;
+                            outStream.WriteToken(reader, false);
+                        }
                     }
-
                     outStream.Flush();
                 }
-                catch (Exception exc)
+                catch (Exception e)
                 {
+                    // TODO can we get the user and tenant context from here?
                 }
                 finally
                 {
                     if (reader != null)
                         reader.Close();
-
                     if (outStream != null)
                         outStream.Close();
 
@@ -145,10 +143,7 @@ namespace Sage.SDataHandler.ContentTypes
         {
             if (maps != null)
             {
-                foreach (var map in maps)
-                {
-                    line = map.Map(line);
-                }
+                line = maps.Aggregate(line, (current, map) => map.Map(current));
             }
 
             return line;
@@ -156,20 +151,21 @@ namespace Sage.SDataHandler.ContentTypes
 
         private int GetContentType()
         {
-            int retVal = CONTENT_SINGLE_RESOURCE;
+            int retVal = ContentSingleResource;
             if (responseObject is IQueryable)
             {
-                retVal = CONTENT_ODATA_COLLECTION;
+                retVal = ContentOdataCollection;
             }
             else if (responseObject is IEnumerable)
             {
-                retVal = CONTENT_API_COLLECTION;
+                retVal = ContentApiCollection;
             }
 
             return retVal;
         }
 
-        private string BuildPagingResponse()
+
+        private void WritePagingProperties(JsonWriter writer)
         {
             int startIndex;
             NameValueCollection query = origResponse.RequestMessage.RequestUri.ParseQueryString();
@@ -190,8 +186,8 @@ namespace Sage.SDataHandler.ContentTypes
             if (responseObject is IQueryable<SDataEntity>)
             {
                 // whenever possible use queriable count; better performance
-                IQueryable<SDataEntity> q = (responseObject as IQueryable<SDataEntity>);
-                count = q.Count<SDataEntity>();
+                var q = (responseObject as IQueryable<SDataEntity>);
+                count = q.Count();
             }
             else if (responseObject is IEnumerable)
             {
@@ -201,9 +197,10 @@ namespace Sage.SDataHandler.ContentTypes
                     count++;
                 }
             }
-
-            string pagingInfo = "\"$startIndex\":" + startIndex + ", \"$itemsPerPage\":" + count + ",";
-            return pagingInfo;
+            writer.WritePropertyName("$startIndex");
+            writer.WriteValue(startIndex);
+            writer.WritePropertyName("$itemsPerPage");
+            writer.WriteValue(count);
         }
 
     }

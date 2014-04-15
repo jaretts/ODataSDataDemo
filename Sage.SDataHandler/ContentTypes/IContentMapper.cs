@@ -8,6 +8,11 @@ namespace Sage.SDataHandler.ContentTypes
 {
     public interface IContentMapper
     {
-        string Map(string oldValue);
+        /// <summary>
+        /// Provide custom mapping from the OData property name to an SData property name.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        string Map(string propertyName);
     }
 }

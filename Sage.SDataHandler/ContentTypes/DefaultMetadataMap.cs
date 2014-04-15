@@ -12,14 +12,14 @@ namespace Sage.SDataHandler.ContentTypes
         private const string SDATA_METADATA_PROPNAME_PREFIX = "__SDataMetadata__";
         private const string SDATA_METADATA_ACTUAL_PREFIX = "$";
 
-        public string Map(string line)
+        public string Map(string propertyName)
         {
             // this is required until property name aliasing is supported by WebAPI/OData serializer
             // see: https://aspnetwebstack.codeplex.com/discussions/462757
-            if (line.Contains(SDATA_METADATA_PROPNAME_PREFIX))
-                line = line.Replace(SDATA_METADATA_PROPNAME_PREFIX, SDATA_METADATA_ACTUAL_PREFIX);
+            if (propertyName.Contains(SDATA_METADATA_PROPNAME_PREFIX))
+                propertyName = propertyName.Replace(SDATA_METADATA_PROPNAME_PREFIX, SDATA_METADATA_ACTUAL_PREFIX);
 
-            return line;
+            return propertyName;
         }
     }
 }
