@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.SDataHandler", "Sage.SDataHandler\Sage.SDataHandler.csproj", "{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODataSDataWebApiDemo3", "ODataSDataWebApiDemo3\ODataSDataWebApiDemo3.csproj", "{578142DA-3820-4DB1-B7EA-CDFB20DABF41}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoModel", "DemoModel\DemoModel.csproj", "{18BC9B9D-48B2-4E7B-ABB9-BA0D6A29C004}"
@@ -14,16 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F30FE1
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.SDataHandler", "..\SDataHandler\Sage.SDataHandler.csproj", "{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{578142DA-3820-4DB1-B7EA-CDFB20DABF41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{578142DA-3820-4DB1-B7EA-CDFB20DABF41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{578142DA-3820-4DB1-B7EA-CDFB20DABF41}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -32,6 +28,10 @@ Global
 		{18BC9B9D-48B2-4E7B-ABB9-BA0D6A29C004}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18BC9B9D-48B2-4E7B-ABB9-BA0D6A29C004}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18BC9B9D-48B2-4E7B-ABB9-BA0D6A29C004}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDC5114D-CE1C-4043-81ED-80CDB9D2149F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

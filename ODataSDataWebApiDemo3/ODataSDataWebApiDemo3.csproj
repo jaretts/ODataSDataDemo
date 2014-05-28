@@ -340,13 +340,13 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SDataHandler\Sage.SDataHandler.csproj">
+      <Project>{edc5114d-ce1c-4043-81ed-80cdb9d2149f}</Project>
+      <Name>Sage.SDataHandler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DemoModel\DemoModel.csproj">
       <Project>{18bc9b9d-48b2-4e7b-abb9-ba0d6a29c004}</Project>
       <Name>DemoModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Sage.SDataHandler\Sage.SDataHandler.csproj">
-      <Project>{edc5114d-ce1c-4043-81ed-80cdb9d2149f}</Project>
-      <Name>Sage.SDataHandler</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
