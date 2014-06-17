@@ -1,5 +1,6 @@
 ﻿using DemoModel.Model;
 using Microsoft.Data.Edm;
+using ODataSDataWebApiDemo3.Controllers;
 using Sage.SDataHandler;
 using Sage.SDataHandler.ContentTypes;
 using System;
@@ -45,14 +46,19 @@ namespace ODataSDataWebApiDemo3
             // optionally add mapper that's a work around for web api odata not supporting property name aiasing
             sdataHandler.AddContentMap(new DefaultMetadataMap());
             sdataHandler.SetErrorResponseBuilder(new DefaultErrorResponseBuilder());
-            GlobalConfiguration.Configuration.MessageHandlers.Add(sdataHandler);
 
+            GlobalConfiguration.Configuration.MessageHandlers.Add(sdataHandler);
         }
 
         private static IEdmModel GetImplicitEDM()
         {
             ODataModelBuilder builder = new ODataConventionModelBuilder();
+
+            builder.EntitySet<DecimalDemo>("Decimals");
+
             builder.EntitySet<Customer>("Customers");
+
+            
             /*
             var selfAction = builder.Entity<Customer>().TransientAction("self");
             selfAction.HasActionLink(ctx =>
